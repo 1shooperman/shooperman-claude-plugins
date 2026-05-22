@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "pokemon-gbl",
-      "description": "",
+      "description": "GBL team builder, type chart lookup, type matchup quiz, and pvpoke.com rankings for Pokemon GO Battle League.",
       "author": {
         "name": "1shooperman"
       },
