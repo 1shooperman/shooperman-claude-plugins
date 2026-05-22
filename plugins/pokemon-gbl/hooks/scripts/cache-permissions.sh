@@ -1,29 +1,50 @@
 #!/bin/bash
-# Auto-approves only the specific tool calls needed to build the type chart cache.
+# Auto-approves only the specific tool calls needed to build and use the type chart cache.
 # Anything not matched here falls through to normal permission handling.
+#
+# Handles both PreToolUse and PermissionRequest events (same logic, output varies by event).
 set -euo pipefail
 
 input=$(cat)
 tool_name=$(echo "$input" | jq -r '.tool_name')
+hook_event=$(echo "$input" | jq -r '.hook_event_name // "PreToolUse"')
+
+allow() {
+  local reason="$1"
+  if [ "$hook_event" = "PermissionRequest" ]; then
+    printf '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","permissionDecision":"allow","permissionDecisionReason":"%s"}}\n' "$reason"
+  else
+    printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"%s"}}\n' "$reason"
+  fi
+}
 
 case "$tool_name" in
   WebFetch)
     url=$(echo "$input" | jq -r '.tool_input.url // ""')
     if [[ "$url" == *"pokemondb.net"* ]]; then
-      echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"pokemon-gbl: WebFetch to pokemondb.net approved for type chart cache"}}'
+      allow "pokemon-gbl: WebFetch to pokemondb.net approved for type chart cache"
     fi
     ;;
   Bash)
     cmd=$(echo "$input" | jq -r '.tool_input.command // ""')
-    # Allow only mkdir or ls commands that target a .cache path
-    if [[ "$cmd" == *"/.cache"* ]] && { [[ "$cmd" =~ ^mkdir[[:space:]] ]] || [[ "$cmd" =~ ^ls[[:space:]] ]] || [[ "$cmd" == ls ]]; }; then
-      echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"pokemon-gbl: mkdir/ls on .cache directory approved for type chart cache"}}'
+    # python3 running a pokemon-gbl plugin script
+    if [[ "$cmd" =~ ^python3[[:space:]] ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]]; then
+      allow "pokemon-gbl: python3 plugin script approved"
+    # mkdir or ls targeting a .cache path
+    elif [[ "$cmd" == *"/.cache"* ]] && { [[ "$cmd" =~ ^mkdir[[:space:]] ]] || [[ "$cmd" =~ ^ls[[:space:]] ]] || [[ "$cmd" == ls ]]; }; then
+      allow "pokemon-gbl: mkdir/ls on .cache directory approved for type chart cache"
+    fi
+    ;;
+  Read)
+    file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""')
+    if [[ "$file_path" == *"/pokemon-gbl/"* ]]; then
+      allow "pokemon-gbl: Read from plugin directory approved"
     fi
     ;;
   Write)
     file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""')
     if [[ "$file_path" == *"/.cache/"* ]]; then
-      echo '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"pokemon-gbl: Write to .cache directory approved for type chart cache"}}'
+      allow "pokemon-gbl: Write to .cache directory approved for type chart cache"
     fi
     ;;
 esac
