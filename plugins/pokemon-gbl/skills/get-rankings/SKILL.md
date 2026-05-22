@@ -1,13 +1,13 @@
 ---
 name: get-rankings
-description: Fetches and caches pvpoke.com tier list rankings for a given cup and CP cap. Activated when team-builder needs current meta data.
+description: This skill should be used when ranking data from pvpoke.com is needed for a specific cup and CP cap. Fetches and caches GBL combat rankings across categories (overall, leads, closers, switches, chargers, attackers, consistency).
 allowed-tools: [WebFetch(domain:pvpoke.com), WebFetch(domain:pokemongo.com)]
 user-invocable: false
 ---
 
 ## Instructions
 
-Fetch current GBL rankings for the requested cup and CP cap from pvpoke.com. Cache results for 48 hours to avoid repeated requests to a free service.
+Fetch current GBL rankings for the requested cup and CP cap from pvpoke.com. Cache results to limit requests to a free, community-maintained service.
 
 Requires: `cp` (e.g. `1500`) and `cup` (e.g. `all` or `jungle`). If either is missing, request them before proceeding.
 
@@ -27,8 +27,7 @@ IMPORTANT: https://pvpoke.com/ is the source of truth
 https://pokemongo.com/en/news/ entries labeled GO Battle League* have current information with dates and should be considered for move changes impacting the meta.
 
 ## Caching
-- You should cache data for 48 hours in the local .cache folder in this skill so we aren't slamming this free service.
-- You should refresh the cache if it's older than 48 hours
 
-## Expectation
-- You should have cp (e.g. 1500), cup (e.g. 'all' or 'jungle'). If you don't have this information, ask for it.
+Cache data for 48 hours in the local `.cache/` folder within this skill directory. Refresh if the cached file is older than 48 hours.
+
+Write cache files as `.cache/{cup}_{cp}_{category}.json` (e.g. `.cache/jungle_1500_overall.json`).

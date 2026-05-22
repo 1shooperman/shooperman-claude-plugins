@@ -1,7 +1,7 @@
 ---
 name: quiz
-description: Quizzes the user on Pokemon GO type matchups drawn from local type chart data. Activated when the user says "quiz me", "test my type knowledge", or "/quiz".
-allowed-tools: [Bash(python3 *gen_question.py), Skill(type-chart)]
+description: This skill should be used when the user wants to practice or test their Pokemon GO type matchup knowledge. Typical triggers include "quiz me on types", "test my type knowledge", "give me a type quiz", "practice type matchups", or the `/quiz` command with an optional question count (e.g. `/quiz 5`). Uses local type chart data — no external calls required.
+allowed-tools: [Bash(python3 */quiz/scripts/gen_question.py), Skill(type-chart)]
 argument-hint: "[n]"
 user-invocable: true
 ---
@@ -19,6 +19,8 @@ Parse `n` from `$ARGUMENTS` as the number of questions to run (default: 1).
 python3 $CLAUDE_PLUGIN_ROOT/skills/quiz/scripts/gen_question.py
 ```
 
+If the script fails (non-zero exit or malformed output), inform the user the type data is unavailable and suggest running `/type-chart` first to confirm the data cache is intact.
+
 2. The script outputs JSON with fields: `question`, `answer`, `mult`, `explanation`
 
 3. Present ONLY the `question` field to the user. Do NOT reveal the answer or explanation yet.
@@ -27,7 +29,7 @@ python3 $CLAUDE_PLUGIN_ROOT/skills/quiz/scripts/gen_question.py
 
 5. Evaluate their answer against the `answer` field:
    - For multiplier questions: accept reasonable approximations (e.g. "super effective", "1.6", "SE" all count for a 1.6x answer)
-   - For list questions: require all correct types; minor ordering/spelling ok
+   - For list questions: require all correct types; minor ordering/spelling ok. No partial credit — if they miss any type, mark incorrect but show what they missed in the feedback.
    - Partial credit: if they get the multiplier bucket right (SE/NVE/neutral/immune) but not the exact value, count as correct with a note
 
 6. Give feedback:
@@ -42,6 +44,3 @@ Track score across the session. At the end report: X/N correct, flag any categor
 - Dual type defender matchup (2x weight — most relevant in-game)
 - List all SE attackers vs a type (1x weight)
 - Double weakness on a dual type (1x weight)
-
-## Data source
-SKILL: type-chart — local, no external calls.
