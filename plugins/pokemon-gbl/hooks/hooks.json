@@ -1,6 +1,18 @@
 {
   "description": "GBL plugin hooks",
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "WebFetch|Bash|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/cache-permissions.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "*",
