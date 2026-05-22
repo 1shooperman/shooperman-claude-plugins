@@ -1,24 +1,15 @@
 ---
 name: get-rankings
-description: Use this skill to pull updated tier lists when the user asks for help building a team
-allowed-tools: [WebFetch(domain:pvpoke.com), WebFetch(domain:pokemongo.com), Skill(team-builder)]
-argument-hint: <required-arg> [optional-arg]
+description: This skill should be used when ranking data from pvpoke.com is needed for a specific cup and CP cap. Fetches and caches GBL combat rankings across categories (overall, leads, closers, switches, chargers, attackers, consistency).
+allowed-tools: [WebFetch(domain:pvpoke.com), WebFetch(domain:pokemongo.com)]
 user-invocable: false
 ---
 
 ## Instructions
 
-When the user is asking for coaching or team building advice, use this skill to ground yourself in the current meta
+Fetch current GBL rankings for the requested cup and CP cap from pvpoke.com. Cache results to limit requests to a free, community-maintained service.
 
-When this skill is invoked:
-
-1. Parse the arguments provided by the user
-2. Perform the requested action using allowed tools
-3. Report results back to the user
-
-## Arguments
-
-The user invoked this with: $ARGUMENTS
+Requires: `cp` (e.g. `1500`) and `cup` (e.g. `all` or `jungle`). If either is missing, request them before proceeding.
 
 ## Sources
 
@@ -36,8 +27,7 @@ IMPORTANT: https://pvpoke.com/ is the source of truth
 https://pokemongo.com/en/news/ entries labeled GO Battle League* have current information with dates and should be considered for move changes impacting the meta.
 
 ## Caching
-- You should cache data for 48 hours in the local .cache folder in this skill so we aren't slamming this free service.
-- You should refresh the cache if it's older than 48 hours
 
-## Expectation
-- You should have cp (e.g. 1500), cup (e.g. 'all' or 'jungle'). If you don't have this information, ask for it.
+Cache data for 48 hours in the local `.cache/` folder within this skill directory. Refresh if the cached file is older than 48 hours.
+
+Write cache files as `.cache/{cup}_{cp}_{category}.json` (e.g. `.cache/jungle_1500_overall.json`).

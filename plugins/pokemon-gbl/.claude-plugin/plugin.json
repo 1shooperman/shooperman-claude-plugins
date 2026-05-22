@@ -1,8 +1,9 @@
 {
-  "name": "pokemon-gbl-teambuilder",
+  "name": "pokemon-gbl",
   "description": "GBL Teambuilding Assistant",
   "author": {
     "name": "1shooperman",
     "email": "contact@aglflorida.com"
-  }
+  },
+  "version": "1.0.0"
 }

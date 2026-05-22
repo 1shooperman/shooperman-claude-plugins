@@ -6,9 +6,9 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 
 | Skill | Invocation | Description |
 |-------|-----------|-------------|
-| `team-builder` | `/team-builder <cup> <cp>` | Build a GBL team for the given cup and CP cap |
+| `team-builder` | `/team-builder <cup> <cp>` | Build or evaluate a GBL team for the given cup and CP cap |
 | `type-chart` | `/type-chart <type1> [type2]` | Look up GO type effectiveness for a single or dual type |
-| `get-rankings` | *(internal)* | Fetches and caches pvpoke.com rankings; called by `team-builder` |
+| `quiz` | `/quiz [n]` | Quiz yourself on type matchups; optionally run `n` questions in a row |
 
 ## Usage
 
@@ -16,13 +16,16 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 /team-builder great 1500
 /team-builder jungle 1500
 /type-chart dark steel
+/type-chart fire
+/quiz
+/quiz 5
 ```
 
 ## Data Sources
 
 - **pvpoke.com** — rankings JSON (cached locally for 48 hours)
 - **pokemongo.com/en/news** — GO Battle League news for move change context
-- Local type chart cache at `.cache/type_chart.json`
+- Local type chart at `skills/type-chart/.cache/type_chart.json`
 
 ## Install
 
