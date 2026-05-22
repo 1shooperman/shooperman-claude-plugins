@@ -1,7 +1,7 @@
 ---
 name: type-chart
 description: This skill should be used when the user asks about Pokemon GO type matchups, weaknesses, resistances, or effectiveness (e.g. "what beats dark/steel", "type chart for fire", "is water good against ground").
-allowed-tools: [Bash(python3 *query_types.py)]
+allowed-tools: [Bash(python3 *query_types.py), Read, Agent(agent-build-cache)]
 argument-hint: "<type1> [type2]"
 user-invocable: true
 ---
@@ -14,7 +14,7 @@ Parse `type1` and optional `type2` from `$ARGUMENTS`. If no arguments are provid
 
 ## Cache file
 
-If $CLAUDE_PLUGIN_ROOT/.cache/type_chart.json, use the agent-build-cache sub-agent to retrieve the cache before proceeding.
+If `$CLAUDE_PLUGIN_ROOT/.cache/type_chart.json` does not exist, invoke the `agent-build-cache` agent to build it before proceeding.
 
 ## Instructions
 
@@ -26,4 +26,4 @@ python3 $CLAUDE_PLUGIN_ROOT/skills/type-chart/scripts/query_types.py [type1] [ty
 
 ## Data
 
-`.cache/type_chart.json` at `$CLAUDE_PLUGIN_ROOT/skills/type-chart/.cache/type_chart.json` — update this file manually when GO patches change type effectiveness.
+`$CLAUDE_PLUGIN_ROOT/.cache/type_chart.json` — rebuilt by `agent-build-cache` when missing; no expiration.

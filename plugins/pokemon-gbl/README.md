@@ -25,7 +25,7 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 
 - **pvpoke.com** — rankings JSON (cached locally for 48 hours)
 - **pokemongo.com/en/news** — GO Battle League news for move change context
-- Local type chart at `skills/type-chart/.cache/type_chart.json`
+- Local cache at `.cache/` (type chart + pvpoke rankings, gitignored)
 
 ## Install
 
