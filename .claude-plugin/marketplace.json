@@ -16,6 +16,16 @@
       "category": "entertainment",
       "source": "./plugins/pokemon-gbl-teambuilder",
       "homepage": "https://github.com/1shooperman/custom-claude-plugins/tree/main/plugins/pokemon-gbl-teambuilder"
+    },
+    {
+      "name": "pokemon-gbl-quiz",
+      "description": "",
+      "author": {
+        "name": "1shooperman"
+      },
+      "category": "entertainment",
+      "source": "./plugins/pokemon-gbl-quiz",
+      "homepage": "https://github.com/1shooperman/custom-claude-plugins/tree/main/plugins/pokemon-gbl-quiz"
     }
   ]
 }
