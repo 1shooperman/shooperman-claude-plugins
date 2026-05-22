@@ -1,4 +1,4 @@
-# pokemon-gbl-teambuilder
+# pokemon-gbl
 
 A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) teams using live rankings from pvpoke.com and local type chart data.
 
@@ -30,5 +30,5 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 ## Install
 
 ```bash
-claude plugin install pokemon-gbl-teambuilder
+claude plugin install pokemon-gbl
 ```
