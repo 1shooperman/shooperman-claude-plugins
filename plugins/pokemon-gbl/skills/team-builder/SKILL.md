@@ -1,7 +1,7 @@
 ---
 name: team-builder
 description: This skill should be used when the user asks to "build a team", "suggest a team", "what team should I run", "is my team good", or wants help evaluating an existing team for a specific Pokemon GO Battle League cup and CP cap.
-allowed-tools: [Bash(sqlite3 *), Skill(get-rankings)]
+allowed-tools: [Skill(get-rankings)]
 argument-hint: "<cup> <cp>"
 user-invocable: true
 ---
