@@ -5,7 +5,7 @@ import random
 import sys
 from pathlib import Path
 
-DATA_FILE = Path(__file__).parent.parent.parent.parent / "data" / "type_chart.json"
+DATA_FILE = Path(__file__).parent.parent.parent / "type-chart" / ".cache" / "type_chart.json"
 
 def load_chart():
     with open(DATA_FILE) as f:

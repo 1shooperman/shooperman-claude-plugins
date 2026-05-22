@@ -1,21 +1,27 @@
 ---
 name: team-builder
-description: Use this skill when the user asks for help building a team
-allowed-tools: [Bash(sqlite3 *)]
-argument-hint: <required-arg> [optional-arg]
+description: Builds and evaluates GBL teams for a given cup and CP cap. Activated when the user asks to "build a team", "suggest a team", or "help me with team building" for Pokemon GO Battle League.
+allowed-tools: [Bash(sqlite3 *), Skill(get-rankings)]
+argument-hint: "<cup> <cp>"
 user-invocable: true
 ---
 
-# Instructions
+## Arguments
 
-you should always ground the user in why you suggested a team. your job is to help the user be able to build the team-building muscles on their own.
+The user invoked this with: $ARGUMENTS
 
-# Invocation
-Example usage `/team-builder [meta/cup]` (e.g. `/team-builder jungle 1500`)
-<skills>
-use the /get-rankings skill to ground yourself in the current meta.
-</skills>
+Parse `cup` and `cp` from `$ARGUMENTS` (e.g. `jungle 1500`). If either is missing, ask for them before proceeding.
 
-<data>
-Reference the local ./cache folders for up to date cup information and rankings. If the cup isn't there, ask me to go get it or use your verifiable sources to go get it.
-</data>
+## Instructions
+
+Always ground team suggestions in the current meta by invoking the `get-rankings` skill first. Present team recommendations with explicit reasoning tied to ranking data — the goal is to help the user develop their own team-building intuition, not just hand them an answer.
+
+Structure every response as:
+1. Meta context — what the top threats and cores are in this cup
+2. Recommended team with role for each slot (lead / safe switch / closer)
+3. Why each pick addresses the meta
+4. One or two alternatives if the top picks are expensive or unavailable
+
+## Data
+
+Reference the local `.cache` folders (at `$CLAUDE_PLUGIN_ROOT/skills/get-rankings/.cache/`) for cached cup rankings. If the cache is missing or stale, use `get-rankings` to refresh it.

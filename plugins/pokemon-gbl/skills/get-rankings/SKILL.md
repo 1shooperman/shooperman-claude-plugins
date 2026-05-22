@@ -1,24 +1,15 @@
 ---
 name: get-rankings
-description: Use this skill to pull updated tier lists when the user asks for help building a team
-allowed-tools: [WebFetch(domain:pvpoke.com), WebFetch(domain:pokemongo.com), Skill(team-builder)]
-argument-hint: <required-arg> [optional-arg]
+description: Fetches and caches pvpoke.com tier list rankings for a given cup and CP cap. Activated when team-builder needs current meta data.
+allowed-tools: [WebFetch(domain:pvpoke.com), WebFetch(domain:pokemongo.com)]
 user-invocable: false
 ---
 
 ## Instructions
 
-When the user is asking for coaching or team building advice, use this skill to ground yourself in the current meta
+Fetch current GBL rankings for the requested cup and CP cap from pvpoke.com. Cache results for 48 hours to avoid repeated requests to a free service.
 
-When this skill is invoked:
-
-1. Parse the arguments provided by the user
-2. Perform the requested action using allowed tools
-3. Report results back to the user
-
-## Arguments
-
-The user invoked this with: $ARGUMENTS
+Requires: `cp` (e.g. `1500`) and `cup` (e.g. `all` or `jungle`). If either is missing, request them before proceeding.
 
 ## Sources
 

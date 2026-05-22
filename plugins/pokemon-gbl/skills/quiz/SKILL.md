@@ -1,8 +1,8 @@
 ---
 name: quiz
-description: Quiz the user on Pokemon GO type matchups drawn from local type chart data
-allowed-tools: [Bash(python3 ./scripts/gen_question.py), Skill(type-chart)]
-argument-hint: <required-arg> [optional-arg]
+description: Quizzes the user on Pokemon GO type matchups drawn from local type chart data. Activated when the user says "quiz me", "test my type knowledge", or "/quiz".
+allowed-tools: [Bash(python3 *gen_question.py), Skill(type-chart)]
+argument-hint: "[n]"
 user-invocable: true
 ---
 
@@ -10,23 +10,13 @@ user-invocable: true
 
 The user invoked this with: $ARGUMENTS
 
-## Instructions
-
-When this skill is invoked:
-
-1. Parse the arguments provided by the user
-2. Perform the requested action using allowed tools
-3. Report results back to the user
-
-## Example usage
-
-Invocation: `/quiz` or `/quiz [n]` to run n questions in a row (default: 1)
+Parse `n` from `$ARGUMENTS` as the number of questions to run (default: 1).
 
 ## How to run a question
 
 1. Execute the question generator:
 ```bash
-python3 ./scripts/gen_question.py
+python3 $CLAUDE_PLUGIN_ROOT/skills/quiz/scripts/gen_question.py
 ```
 
 2. The script outputs JSON with fields: `question`, `answer`, `mult`, `explanation`
