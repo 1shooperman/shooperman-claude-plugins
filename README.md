@@ -1,4 +1,4 @@
-# 1shooperman's claude plugin 
+# 1shooperman's claude plugin custom marketplace 
 
 ## Available Plug-ins
 - [pokemon-gbl-teambuilder](https://github.com/1shooperman/custom-claude-plugins/blob/main/plugins/pokemon-gbl-teambuilder)
@@ -10,10 +10,12 @@
 ~ claude plugin marketplace add https://github.com/1shooperman/custom-claude-plugins.git
 ```
 
-## Remove the marketplace
+## Update / Remove the marketplace
 ```bash
-~ claude plugin marketplace remove custom-claude-plugins
+~ claude plugin marketplace (remove|update) custom-claude-plugins
 ```
   
 ## Install plug-ins from the custom marketplace
-  
+```bash
+~ claude plugin install [plugin-name]
+```
