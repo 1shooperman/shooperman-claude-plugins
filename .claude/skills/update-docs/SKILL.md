@@ -12,6 +12,7 @@ Read each of the plug-ins in the ./plugins folder and update their respective RE
 
 1. The primary README.md (at root) is the only README that should not follow the template structure. 
 2. The primary README.md should be kept up to date with top level information.
+3. DO NOT conflate internal dependency references with user invokable skills.
 
 ## Arguments
 
