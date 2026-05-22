@@ -24,8 +24,9 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 ## Data Sources
 
 - **pvpoke.com** — rankings JSON (cached locally for 48 hours)
+- **pokemondb.net** — GO type matchup chart (fetched once, cached indefinitely at `.cache/type_chart.json`)
 - **pokemongo.com/en/news** — GO Battle League news for move change context
-- Local cache at `.cache/` (type chart + pvpoke rankings, gitignored)
+- Local cache at `.cache/` (type chart + pvpoke rankings, gitignored; built automatically on first use)
 
 ## Install
 

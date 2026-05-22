@@ -6,15 +6,15 @@
 
 ## Add the marketplace
 ```bash 
-~ claude plugin marketplace add https://github.com/1shooperman/shooperman-claude-plugins.git
+claude plugin marketplace add https://github.com/1shooperman/shooperman-claude-plugins.git
 ```
 
 ## Update / Remove the marketplace
 ```bash
-~ claude plugin marketplace (remove|update) shooperman-claude-plugins
+claude plugin marketplace (remove|update) shooperman-claude-plugins
 ```
   
 ## Install plug-ins from the custom marketplace
 ```bash
-~ claude plugin install [plugin-name]
+claude plugin install [plugin-name]
 ```
