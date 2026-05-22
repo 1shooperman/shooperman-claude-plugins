@@ -1,0 +1,21 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "custom-claude-plugins",
+  "description": "Random assortment of jelly donuts",
+  "owner": {
+    "name": "Brandon Shoop",
+    "email": "contact@aglflorida.com"
+  },
+  "plugins": [
+    {
+      "name": "pokemon-gbl-teambuilder",
+      "description": "",
+      "author": {
+        "name": "1shooperman"
+      },
+      "category": "entertainment",
+      "source": "./plugins/pokemon-gbl-teambuilder",
+      "homepage": "https://github.com/1shooperman/custom-claude-plugins/tree/main/plugins/pokemon-gbl-teambuilder"
+    }
+  ]
+}
