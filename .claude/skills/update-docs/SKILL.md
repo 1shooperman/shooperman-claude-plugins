@@ -2,7 +2,6 @@
 name: update-docs
 description: Update the local plugin marketplace docs accordingly.
 allowed-tools: [Bash, Read, Bash(git log *)]
-argument-hint: <required-arg> [optional-arg]
 user-invocable: true
 ---
 
