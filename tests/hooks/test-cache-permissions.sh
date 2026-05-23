@@ -37,11 +37,19 @@ assert_passthrough() {
   fi
 }
 
-# Simulate the hook_event_name field for PermissionRequest
-permission_request() {
-  local tool="$1"
-  local input_fragment="$2"
-  echo "{\"hook_event_name\":\"PermissionRequest\",\"tool_name\":\"$tool\",$input_fragment}"
+assert_decision_allow() {
+  local desc="$1"
+  local payload="$2"
+  local out
+  out=$(echo "$payload" | bash "$SCRIPT")
+  if echo "$out" | grep -q '"decision":"allow"'; then
+    echo "    PASS: $desc"
+    pass=$((pass + 1))
+  else
+    echo "    FAIL: $desc"
+    echo "          expected decision=allow, got: $out"
+    fail=$((fail + 1))
+  fi
 }
 
 echo "  cache-permissions.sh — PreToolUse"
@@ -84,31 +92,6 @@ assert_passthrough \
   "Bash arbitrary python3 without plugin path" \
   '{"tool_name":"Bash","tool_input":{"command":"python3 -c \"print(42)\""}}'
 
-# --- Bash: mkdir/ls on .cache ---
-assert_allows \
-  "Bash mkdir -p .cache" \
-  '{"tool_name":"Bash","tool_input":{"command":"mkdir -p /some/path/.cache"}}'
-
-assert_allows \
-  "Bash ls .cache file" \
-  '{"tool_name":"Bash","tool_input":{"command":"ls /some/path/.cache/type_chart.json"}}'
-
-assert_allows \
-  "Bash ls .cache directory" \
-  '{"tool_name":"Bash","tool_input":{"command":"ls /some/path/.cache/"}}'
-
-assert_passthrough \
-  "Bash rm on .cache path" \
-  '{"tool_name":"Bash","tool_input":{"command":"rm -rf /some/path/.cache/type_chart.json"}}'
-
-assert_passthrough \
-  "Bash mkdir without .cache path" \
-  '{"tool_name":"Bash","tool_input":{"command":"mkdir -p /some/other/dir"}}'
-
-assert_passthrough \
-  "Bash ls without .cache path" \
-  '{"tool_name":"Bash","tool_input":{"command":"ls /some/other/dir"}}'
-
 assert_passthrough \
   "Bash arbitrary command" \
   '{"tool_name":"Bash","tool_input":{"command":"curl https://example.com"}}'
@@ -119,65 +102,33 @@ assert_allows \
   '{"tool_name":"Read","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/skills/type-chart/templates/type_chart_template.json"}}'
 
 assert_allows \
-  "Read data file from pokemon-gbl plugin dir" \
-  '{"tool_name":"Read","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/.cache/type_chart.json"}}'
+  "Read cache file from ~/.cache/pokemon-gbl" \
+  '{"tool_name":"Read","tool_input":{"file_path":"/home/user/.cache/pokemon-gbl/type_chart.json"}}'
 
 assert_passthrough \
   "Read from unrelated path" \
   '{"tool_name":"Read","tool_input":{"file_path":"/some/other/file.json"}}'
 
-# --- Write ---
-assert_allows \
-  "Write to .cache/ directory" \
-  '{"tool_name":"Write","tool_input":{"file_path":"/some/path/.cache/type_chart.json","content":"{}"}}'
-
+# --- Other tools pass through ---
 assert_passthrough \
-  "Write to non-cache path" \
-  '{"tool_name":"Write","tool_input":{"file_path":"/some/path/settings.json","content":"{}"}}'
+  "Write passes through (not sensitive, handled by agent allowed-tools)" \
+  '{"tool_name":"Write","tool_input":{"file_path":"/home/user/.cache/pokemon-gbl/type_chart.json","content":"{}"}}'
 
-assert_passthrough \
-  "Write to path with .cache in filename only" \
-  '{"tool_name":"Write","tool_input":{"file_path":"/some/path/not-a-cache-dir","content":"{}"}}'
-
-# --- Other tools ---
 assert_passthrough \
   "Edit tool passes through" \
   '{"tool_name":"Edit","tool_input":{"file_path":"/some/file","old_string":"a","new_string":"b"}}'
 
-# --- PermissionRequest event (sensitive file dialogs) ---
+# --- PermissionRequest event ---
 echo ""
 echo "  cache-permissions.sh — PermissionRequest"
 
-assert_decision_allow() {
-  local desc="$1"
-  local payload="$2"
-  local out
-  out=$(echo "$payload" | bash "$SCRIPT")
-  if echo "$out" | grep -q '"decision":"allow"'; then
-    echo "    PASS: $desc"
-    pass=$((pass + 1))
-  else
-    echo "    FAIL: $desc"
-    echo "          expected decision=allow, got: $out"
-    fail=$((fail + 1))
-  fi
-}
-
 assert_decision_allow \
-  "PermissionRequest: mkdir .cache (sensitive file guard)" \
-  '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"mkdir -p /some/path/pokemon-gbl/1.0.3/.cache"}}'
-
-assert_decision_allow \
-  "PermissionRequest: Write type_chart.json (sensitive file guard)" \
-  '{"hook_event_name":"PermissionRequest","tool_name":"Write","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/.cache/type_chart.json","content":"{}"}}'
+  "PermissionRequest: python3 pokemon-gbl script" \
+  '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"python3 /some/path/pokemon-gbl/1.0.3/skills/type-chart/scripts/query_types.py fire water"}}'
 
 assert_passthrough \
-  "PermissionRequest: mkdir non-cache path passes through" \
+  "PermissionRequest: unrelated Bash passes through" \
   '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"mkdir -p /some/other/dir"}}'
-
-assert_passthrough \
-  "PermissionRequest: Write non-cache path passes through" \
-  '{"hook_event_name":"PermissionRequest","tool_name":"Write","tool_input":{"file_path":"/some/path/settings.json","content":"{}"}}'
 
 echo ""
 echo "    $pass passed, $fail failed"

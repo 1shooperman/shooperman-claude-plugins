@@ -31,21 +31,12 @@ case "$tool_name" in
     # python3 running a pokemon-gbl plugin script (with or without leading env var prefix)
     if [[ "$cmd" == *"python3"* ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]]; then
       allow "pokemon-gbl: python3 plugin script approved"
-    # mkdir or ls targeting a .cache path
-    elif [[ "$cmd" == *"/.cache"* ]] && { [[ "$cmd" =~ ^mkdir[[:space:]] ]] || [[ "$cmd" =~ ^ls[[:space:]] ]] || [[ "$cmd" == ls ]]; }; then
-      allow "pokemon-gbl: mkdir/ls on .cache directory approved for type chart cache"
     fi
     ;;
   Read)
     file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""')
     if [[ "$file_path" == *"/pokemon-gbl/"* ]]; then
       allow "pokemon-gbl: Read from plugin directory approved"
-    fi
-    ;;
-  Write)
-    file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""')
-    if [[ "$file_path" == *"/.cache/"* ]]; then
-      allow "pokemon-gbl: Write to .cache directory approved for type chart cache"
     fi
     ;;
 esac

@@ -3,7 +3,7 @@
   "hooks": {
     "PermissionRequest": [
       {
-        "matcher": "Bash|Write",
+        "matcher": "Bash",
         "hooks": [
           {
             "type": "command",
@@ -15,7 +15,7 @@
     ],
     "PreToolUse": [
       {
-        "matcher": "WebFetch|Bash|Read|Write",
+        "matcher": "WebFetch|Bash|Read",
         "hooks": [
           {
             "type": "command",

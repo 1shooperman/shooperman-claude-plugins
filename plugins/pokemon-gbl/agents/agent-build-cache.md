@@ -15,10 +15,10 @@ Gather data from https://pokemondb.net/go/type
 
 Read the storage format from `$CLAUDE_PLUGIN_ROOT/skills/type-chart/templates/type_chart_template.json` and use it as the schema for the output file.
 
-Write the result to `$CLAUDE_PLUGIN_ROOT/.cache/type_chart.json`. Create the `.cache/` directory first if it does not exist:
+Write the result to `~/.cache/pokemon-gbl/type_chart.json`. Create the directory first if it does not exist:
 
 ```bash
-mkdir -p $CLAUDE_PLUGIN_ROOT/.cache
+mkdir -p ~/.cache/pokemon-gbl
 ```
 
 ## Cache expiration
