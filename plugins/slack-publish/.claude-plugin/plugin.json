@@ -1,0 +1,9 @@
+{
+  "name": "slack-publish",
+  "description": "Publish local Markdown files to Slack as formatted messages via chat.postMessage",
+  "author": {
+    "name": "1shooperman",
+    "email": "contact@aglflorida.com"
+  },
+  "version": "1.0.0"
+}

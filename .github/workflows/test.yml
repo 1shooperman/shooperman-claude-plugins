@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - '.claude-plugin/**'
+      - 'plugins/slack-publish/**'
 
 permissions:
   contents: read
@@ -24,6 +25,24 @@ jobs:
 
       - name: Run tests
         run: make test
+
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install ruff pytest
+
+      - name: Lint
+        run: ruff check plugins/slack-publish/skills/publish/scripts/publish_markdown_to_slack.py
+
+      - name: Test
+        run: pytest plugins/slack-publish/tests/ -q --tb=short
 
   validate:
     runs-on: ubuntu-latest
