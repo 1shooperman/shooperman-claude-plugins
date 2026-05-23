@@ -7,7 +7,7 @@ user-invocable: true
 
 ## Instruction
 
-Keep all documentation in sync after plugin changes. Three targets:
+Keep all documentation in sync after plugin changes. Four targets:
 
 1. **Plugin READMEs** — `plugins/*/README.md`, one per plugin, following `./templates/README_TEMPLATE.md`
 2. **Root README** — `README.md` at repo root; does NOT follow the template; reflects the full plugin list and marketplace install instructions
