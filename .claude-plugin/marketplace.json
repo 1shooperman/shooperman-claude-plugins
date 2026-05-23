@@ -14,7 +14,7 @@
         "name": "Brandon Shoop <1shooperman>"
       },
       "category": "productivity",
-      "source": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools",
+      "source": "./plugins/custom-plugin-tools",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
     },
     {
@@ -24,7 +24,7 @@
         "name": "Brandon Shoop <1shooperman>"
       },
       "category": "entertainment",
-      "source": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/fitness-coach",
+      "source": "./plugins/fitness-coach",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/fitness-coach"
     },
     {
@@ -34,7 +34,7 @@
         "name": "Brandon Shoop <1shooperman>"
       },
       "category": "entertainment",
-      "source": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/pokemon-gbl",
+      "source": "./plugins/pokemon-gbl",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/pokemon-gbl"
     }
   ]
