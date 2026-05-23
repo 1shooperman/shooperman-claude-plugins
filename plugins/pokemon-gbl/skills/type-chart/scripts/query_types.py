@@ -3,7 +3,7 @@ import json
 import sys
 from pathlib import Path
 
-DATA_FILE = Path(__file__).parent.parent.parent.parent / ".cache" / "type_chart.json"
+DATA_FILE = Path.home() / ".cache" / "pokemon-gbl" / "type_chart.json"
 
 BUCKETS = [
     (2.50,  99,   "2.56x  double SE"),

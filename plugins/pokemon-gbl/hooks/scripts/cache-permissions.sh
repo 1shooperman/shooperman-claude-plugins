@@ -28,12 +28,13 @@ case "$tool_name" in
     ;;
   Bash)
     cmd=$(echo "$input" | jq -r '.tool_input.command // ""')
-    # python3 running a pokemon-gbl plugin script
-    if [[ "$cmd" =~ ^python3[[:space:]] ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]]; then
+    # python3 running a pokemon-gbl plugin script (with or without leading env var prefix)
+    if [[ "$cmd" == *"python3"* ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]]; then
       allow "pokemon-gbl: python3 plugin script approved"
-    # mkdir or ls targeting a .cache path
-    elif [[ "$cmd" == *"/.cache"* ]] && { [[ "$cmd" =~ ^mkdir[[:space:]] ]] || [[ "$cmd" =~ ^ls[[:space:]] ]] || [[ "$cmd" == ls ]]; }; then
-      allow "pokemon-gbl: mkdir/ls on .cache directory approved for type chart cache"
+    # non-destructive operations targeting the pokemon-gbl cache directory
+    elif [[ "$cmd" == *"/.cache/pokemon-gbl"* ]] && \
+         ! [[ "$cmd" =~ ^(rm|rmdir|mv|chmod|chown)[[:space:]] ]]; then
+      allow "pokemon-gbl: pokemon-gbl cache operation approved"
     fi
     ;;
   Read)
@@ -44,8 +45,8 @@ case "$tool_name" in
     ;;
   Write)
     file_path=$(echo "$input" | jq -r '.tool_input.file_path // ""')
-    if [[ "$file_path" == *"/.cache/"* ]]; then
-      allow "pokemon-gbl: Write to .cache directory approved for type chart cache"
+    if [[ "$file_path" == *"/.cache/pokemon-gbl/"* ]]; then
+      allow "pokemon-gbl: Write to pokemon-gbl cache directory approved"
     fi
     ;;
 esac

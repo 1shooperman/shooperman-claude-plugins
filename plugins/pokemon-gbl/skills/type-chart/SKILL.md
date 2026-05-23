@@ -14,7 +14,7 @@ Parse `type1` and optional `type2` from `$ARGUMENTS`. If no arguments are provid
 
 ## Cache file
 
-If `$CLAUDE_PLUGIN_ROOT/.cache/type_chart.json` does not exist, invoke the `agent-build-cache` agent to build it before proceeding.
+If `~/.cache/pokemon-gbl/type_chart.json` does not exist, invoke the `agent-build-cache` agent to build it before proceeding.
 
 ## Instructions
 
@@ -26,4 +26,4 @@ python3 $CLAUDE_PLUGIN_ROOT/skills/type-chart/scripts/query_types.py [type1] [ty
 
 ## Data
 
-`$CLAUDE_PLUGIN_ROOT/.cache/type_chart.json` — rebuilt by `agent-build-cache` when missing; no expiration.
+`~/.cache/pokemon-gbl/type_chart.json` — rebuilt by `agent-build-cache` when missing; no expiration.
