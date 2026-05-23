@@ -28,6 +28,8 @@ https://pokemongo.com/en/news/ entries labeled GO Battle League* have current in
 
 ## Caching
 
-Cache data for 48 hours in the plugin root `.cache/` folder at `$CLAUDE_PLUGIN_ROOT/.cache/`. Refresh if the cached file is older than 48 hours.
+Cache data for 48 hours in `~/.cache/pokemon-gbl/rankings/`. Refresh if the cached file is older than 48 hours.
 
-Write cache files as `$CLAUDE_PLUGIN_ROOT/.cache/{cup}_{cp}_{category}.json` (e.g. `$CLAUDE_PLUGIN_ROOT/.cache/jungle_1500_overall.json`).
+Write cache files as `~/.cache/pokemon-gbl/rankings/{cup}_{cp}_{category}.json` (e.g. `~/.cache/pokemon-gbl/rankings/jungle_1500_overall.json`).
+
+Create the directory if it does not exist.

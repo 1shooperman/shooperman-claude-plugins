@@ -18,13 +18,31 @@ Parse optional `csv_path` and `db_path` from `$ARGUMENTS`. If not provided, use 
 
 ## Instructions
 
-Run the ingest script with the resolved paths:
+Run the full ingest pipeline in order:
+
+### Step 1 — Ingest CSV
 
 ```bash
 python3 $CLAUDE_PLUGIN_ROOT/skills/ingest-mons/scripts/ingest.py [csv_path] [db_path]
 ```
 
+### Step 2 — Build move data cache (skip if `~/.cache/pokemon-gbl/move_data.json` already exists)
+
+Requires rankings cache in `~/.cache/pokemon-gbl/rankings/`. If missing, run `/get-rankings` first for the relevant cups/caps, then:
+
+```bash
+python3 $CLAUDE_PLUGIN_ROOT/skills/ingest-mons/scripts/fetch_move_data.py
+```
+
+### Step 3 — Enrich DB with types, sprites, and move metadata
+
+```bash
+python3 $CLAUDE_PLUGIN_ROOT/skills/ingest-mons/scripts/enrich.py [db_path]
+```
+
 Report back to the user:
-- How many rows were ingested
+- How many rows were ingested (Step 1)
 - Total mons in DB after ingest
+- Whether move data cache was built or reused (Step 2)
+- How many mons were enriched (Step 3)
 - Any errors printed to stderr
