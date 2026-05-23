@@ -6,7 +6,7 @@
 ## CI
 
 - Validate step only runs when plugin paths change (`.claude-plugin/`, `plugins/*/` skills/agents/hooks/commands)
-- Validate step uses `warn-invariants: I1 I3 I5 I8`
+- Validate step uses `warn-invariants: I1 I5 I8`
 
 ## Docs
 

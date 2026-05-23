@@ -36,6 +36,16 @@
       "category": "entertainment",
       "source": "./plugins/pokemon-gbl",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/pokemon-gbl"
+    },
+    {
+      "name": "slack-publish",
+      "description": "Publish local Markdown files to Slack as formatted messages via chat.postMessage.",
+      "author": {
+        "name": "Brandon Shoop <1shooperman>"
+      },
+      "category": "productivity",
+      "source": "./plugins/slack-publish",
+      "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/slack-publish"
     }
   ]
 }
