@@ -2,6 +2,7 @@
 name: onboard-user
 description: Use this skill when the user wants to set up their athlete profile, run intake for the first time, or update their USER_CONTEXT.md for the coaching system.
 user-invocable: true
+allowed-tools: [Write]
 ---
 
 # onboard

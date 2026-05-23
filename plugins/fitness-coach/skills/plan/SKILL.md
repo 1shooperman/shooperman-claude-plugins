@@ -1,16 +1,21 @@
 ---
 name: plan
-description: Use this skill when the user asks to write a fitness plan
+description: Use this skill when the user asks to build, generate, or create a fitness plan, or runs /plan with a goal or description.
 user-invocable: true
+argument-hint: "<goal or description>"
+allowed-tools: [Read, Write]
 ---
 
 ## Invocation
 
-`/plan`
+`/plan <goal or description>`
 
 ## Instructions
 
-Prompt me for deep cut information on my fitness goals and available equipment so we can build the right fitness plan for me.
+1. Check that `~/.cache/fitness-coach/USER_CONTEXT.md` exists. If it does not, tell the user to run `/onboard-user` first and stop.
+2. Check that at least one coach file exists in `~/.cache/fitness-coach/staff/`. If none exist, tell the user to run `/onboard-staff` first and stop.
+3. If `$ARGUMENTS` is empty, ask the user: "What goal or focus should I plan for?" and wait for their answer before continuing.
+4. Read `~/.cache/fitness-coach/USER_CONTEXT.md` and all files in `~/.cache/fitness-coach/staff/`.
 
 ## What Each Coach Receives
 

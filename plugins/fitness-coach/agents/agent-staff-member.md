@@ -1,6 +1,19 @@
 ---
 name: agent-staff-member
-description: Agent to take on the provided <persona.md> and reason.
+description: >
+  Use this agent when a coaching staff member needs to produce their domain recommendation
+  for an athlete. Triggered by the /plan skill during Round 1 — one instance per coach
+  in ~/.cache/fitness-coach/staff/. Examples:
+
+  <example>
+  Context: plan skill is running Round 1
+  assistant: "Spinning up staff member agent for Dr. Peter Attia"
+  </example>
+
+  <example>
+  Context: plan skill dispatches agents in parallel
+  assistant: "Running all 5 staff member agents simultaneously"
+  </example>
 allowed-tools: [Read]
 model: sonnet
 ---
