@@ -18,19 +18,22 @@ Parse `<markdown-file>` and `<channel>` from `$ARGUMENTS`. Both are required —
 
 1. Verify the markdown file exists at the given path.
 
-2. Run the publisher script:
+2. Run the publisher script, quoting each argument as a discrete shell word to prevent shell injection:
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" <markdown-file> <channel>
+   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
+     -- "<markdown-file>" "<channel>"
    ```
 
 3. If `SLACK_BOT_TOKEN` is not set in the environment, the script will also check `.env` and `.env.local` in the current directory automatically. To use a different token file:
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" <markdown-file> <channel> --env-file <path>
+   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
+     -- "<markdown-file>" "<channel>" --env-file "<path>"
    ```
 
 4. To preview the converted Slack text without posting:
    ```bash
-   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" <markdown-file> <channel> --dry-run
+   python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
+     -- "<markdown-file>" "<channel>" --dry-run
    ```
 
 5. Report success including the resolved channel ID and message timestamp (`ts`).
