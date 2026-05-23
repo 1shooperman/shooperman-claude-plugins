@@ -1,0 +1,9 @@
+{
+  "name": "custom-plugin-tools",
+  "description": "Multi-agent PR description writer: summarizes changes, audits security, and generates a concrete test plan",
+  "author": {
+    "name": "1shooperman",
+    "email": "contact@aglflorida.com"
+  },
+  "version": "1.0.0"
+}
