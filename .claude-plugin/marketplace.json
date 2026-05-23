@@ -8,10 +8,30 @@
   },
   "plugins": [
     {
+      "name": "custom-plugin-tools",
+      "description": "Quality of life plugin to update the PR body automatically.",
+      "author": {
+        "name": "Brandon Shoop <1shooperman>"
+      },
+      "category": "productivity",
+      "source": "./plugins/custom-plugin-tools",
+      "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
+    },
+    {
+      "name": "fitness-coach",
+      "description": "Builds personalized fitness plans using a panel of real-world health and fitness experts.",
+      "author": {
+        "name": "Brandon Shoop <1shooperman>"
+      },
+      "category": "entertainment",
+      "source": "./plugins/fitness-coach",
+      "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/fitness-coach"
+    },
+    {
       "name": "pokemon-gbl",
       "description": "GBL team builder, type chart lookup, type matchup quiz, and pvpoke.com rankings for Pokemon GO Battle League.",
       "author": {
-        "name": "1shooperman"
+        "name": "Brandon Shoop <1shooperman>"
       },
       "category": "entertainment",
       "source": "./plugins/pokemon-gbl",

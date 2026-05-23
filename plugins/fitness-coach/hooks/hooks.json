@@ -1,0 +1,17 @@
+{
+  "description": "Fitness coach plugin hooks",
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash $CLAUDE_PLUGIN_ROOT/hooks/scripts/session-time.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}
