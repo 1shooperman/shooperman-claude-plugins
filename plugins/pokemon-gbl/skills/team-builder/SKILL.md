@@ -16,7 +16,7 @@ Parse `cup` and `cp` from `$ARGUMENTS` (e.g. `jungle 1500`). If either is missin
 
 Always invoke the `get-rankings` skill first to ground suggestions in the current meta. Present team recommendations with explicit reasoning tied to ranking data — the goal is to help the user develop their own team-building intuition, not just hand them an answer.
 
-Before offering alternatives for expensive or unavailable picks, ask the user which Pokemon they already have. Then structure every response as:
+Before offering alternatives for expensive or unavailable picks, check the `mons-db` MCP server (via `list_mons` or `search_mons`) to see which pokemon the user already has in their personal collection. If the MCP server is unavailable, ask the user directly. Then structure every response as:
 
 1. Meta context — what the top threats and cores are in this cup
 2. Recommended team with role for each slot (lead / safe switch / closer)
