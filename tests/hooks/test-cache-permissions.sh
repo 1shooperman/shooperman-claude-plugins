@@ -92,6 +92,18 @@ assert_passthrough \
   "Bash arbitrary python3 without plugin path" \
   '{"tool_name":"Bash","tool_input":{"command":"python3 -c \"print(42)\""}}'
 
+assert_allows \
+  "Bash mkdir for pokemon-gbl cache" \
+  '{"tool_name":"Bash","tool_input":{"command":"mkdir -p ~/.cache/pokemon-gbl"}}'
+
+assert_allows \
+  "Bash compound ls+wc verification of cache" \
+  '{"tool_name":"Bash","tool_input":{"command":"ls -lah ~/.cache/pokemon-gbl/ && wc -l ~/.cache/pokemon-gbl/type_chart.json"}}'
+
+assert_passthrough \
+  "Bash rm on pokemon-gbl cache blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"rm -rf ~/.cache/pokemon-gbl/type_chart.json"}}'
+
 assert_passthrough \
   "Bash arbitrary command" \
   '{"tool_name":"Bash","tool_input":{"command":"curl https://example.com"}}'
@@ -110,9 +122,17 @@ assert_passthrough \
   '{"tool_name":"Read","tool_input":{"file_path":"/some/other/file.json"}}'
 
 # --- Other tools pass through ---
-assert_passthrough \
-  "Write passes through (not sensitive, handled by agent allowed-tools)" \
+assert_allows \
+  "Write to ~/.cache/pokemon-gbl/ approved" \
   '{"tool_name":"Write","tool_input":{"file_path":"/home/user/.cache/pokemon-gbl/type_chart.json","content":"{}"}}'
+
+assert_allows \
+  "Write via relative path to .cache/pokemon-gbl/" \
+  '{"tool_name":"Write","tool_input":{"file_path":"../../.cache/pokemon-gbl/type_chart.json","content":"{}"}}'
+
+assert_passthrough \
+  "Write to unrelated path blocked" \
+  '{"tool_name":"Write","tool_input":{"file_path":"/home/user/.cache/other/file.json","content":"{}"}}'
 
 assert_passthrough \
   "Edit tool passes through" \
