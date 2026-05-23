@@ -1,18 +1,18 @@
 ---
 name: agent-sdet
 description: >
-  Identifies gaps in the test suite for hook scripts changed in this PR and writes
+  Identifies gaps in the test suite for any scripts changed in this PR and writes
   missing test files. Triggered by the custom-plugin-tools:update skill in parallel with the
   other PR body agents. Examples:
 
   <example>
-  Context: custom-plugin-tools:update skill is building a PR body and hook scripts were changed
-  assistant: "Running sdet agent to check for missing test coverage on changed hooks"
+  Context: custom-plugin-tools:update skill is building a PR body and scripts were changed
+  assistant: "Running sdet agent to check for missing test coverage on changed scripts"
   </example>
 
   <example>
-  Context: a new hook script was added to a plugin
-  assistant: "Running sdet agent to write tests/hooks/test-<script-name>.sh"
+  Context: a new script was added to a plugin
+  assistant: "Running sdet agent to write tests/**/test-<script-name>.sh"
   </example>
 allowed-tools: [Bash, Read, Write]
 model: sonnet
@@ -29,7 +29,7 @@ You are an SDET. Your job is to find gaps in the existing test suite for hook sc
 git diff main...HEAD --name-only
 ```
 
-Identify any hook shell scripts that were added or changed (files matching `hooks/scripts/*.sh`).
+Identify any hook shell scripts that were added or changed (files matching `**/scripts/*.sh` or `**/scripts/*.py`).
 
 Also read the existing test files under `tests/` to understand current coverage:
 
@@ -39,7 +39,7 @@ find tests/ -name "test-*.sh" | sort
 
 ### Test pattern
 
-The test suite lives under `tests/` and is auto-discovered by `tests/run-tests.sh`. Each test file is a bash script named `test-*.sh`. Follow the pattern in `tests/hooks/test-session-time.sh`:
+The test suite lives under `tests/` and is auto-discovered by `tests/run-tests.sh`. Each test file is a bash script named `test-*.sh`. Follow the pattern in `tests/**/test-session-time.sh`:
 - Define a local `assert` function that prints PASS/FAIL and tracks counts
 - Run the script under test and capture output
 - Assert on: valid JSON output, required keys present, correct value types, script exits 0
@@ -47,7 +47,7 @@ The test suite lives under `tests/` and is auto-discovered by `tests/run-tests.s
 
 ### For each changed hook script
 
-1. Check whether `tests/hooks/test-<script-name>.sh` already exists.
+1. Check whether `tests/**/test-<script-name>.sh` already exists.
 2. If it does **not** exist: write it from scratch covering the full assert pattern above.
 3. If it **does** exist: read it, identify any cases missing for the new behavior, and add them.
 
