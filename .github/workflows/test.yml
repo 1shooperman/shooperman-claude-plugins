@@ -4,6 +4,14 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
+    paths:
+      - '.claude-plugin/**'
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -16,3 +24,28 @@ jobs:
 
       - name: Run tests
         run: make test
+
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check for plugin path changes
+        id: paths
+        run: |
+          BASE="${{ github.event.pull_request.base.sha }}"
+          if [ -z "$BASE" ]; then BASE="HEAD~1"; fi
+          CHANGED=$(git diff --name-only "$BASE"...HEAD | grep -E \
+            '^(\.claude-plugin/|plugins/[^/]+/(\.claude-plugin|agents|skills|hooks|commands)/)' \
+            | wc -l)
+          echo "changed=$([ "$CHANGED" -gt 0 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Validate plugins
+        if: steps.paths.outputs.changed == 'true'
+        uses: anthropics/claude-plugins-community/.github/actions/validate-plugins@f846a0bcb0e721b1f93d60e8b73e91dafc4a1e87
+        with:
+          marketplace-path: .claude-plugin/marketplace.json
+          warn-invariants: "I1 I3 I5 I8"
+          claude-cli-version: latest
