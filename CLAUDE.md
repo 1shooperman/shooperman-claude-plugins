@@ -1,3 +1,7 @@
+## Git
+
+Never commit directly to `main`. Always create a feature branch (e.g. `feat/description` or `fix/description`) and open a PR.
+
 ## Commands
 
 - `make test` — run plugin tests
