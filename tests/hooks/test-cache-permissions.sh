@@ -144,11 +144,26 @@ assert_passthrough \
 echo ""
 echo "  cache-permissions.sh — PermissionRequest"
 
-assert_allows \
+assert_decision_allow() {
+  local desc="$1"
+  local payload="$2"
+  local out
+  out=$(echo "$payload" | bash "$SCRIPT")
+  if echo "$out" | grep -q '"decision":"allow"'; then
+    echo "    PASS: $desc"
+    pass=$((pass + 1))
+  else
+    echo "    FAIL: $desc"
+    echo "          expected decision=allow, got: $out"
+    fail=$((fail + 1))
+  fi
+}
+
+assert_decision_allow \
   "PermissionRequest: mkdir .cache (sensitive file guard)" \
   '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"mkdir -p /Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/.cache"}}'
 
-assert_allows \
+assert_decision_allow \
   "PermissionRequest: Write type_chart.json (sensitive file guard)" \
   '{"hook_event_name":"PermissionRequest","tool_name":"Write","tool_input":{"file_path":"/Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/.cache/type_chart.json","content":"{}"}}'
 

@@ -12,7 +12,8 @@ hook_event=$(echo "$input" | jq -r '.hook_event_name // "PreToolUse"')
 allow() {
   local reason="$1"
   if [ "$hook_event" = "PermissionRequest" ]; then
-    printf '{"hookSpecificOutput":{"hookEventName":"PermissionRequest","permissionDecision":"allow","permissionDecisionReason":"%s"}}\n' "$reason"
+    # PermissionRequest uses the top-level decision field, not hookSpecificOutput
+    printf '{"decision":"allow","reason":"%s"}\n' "$reason"
   else
     printf '{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow","permissionDecisionReason":"%s"}}\n' "$reason"
   fi
