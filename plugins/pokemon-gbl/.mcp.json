@@ -1,0 +1,9 @@
+{
+  "mons-db": {
+    "command": "python3",
+    "args": ["${CLAUDE_PLUGIN_ROOT}/mcp/mons_server.py"],
+    "env": {
+      "MONS_DB_PATH": "${HOME}/.cache/pokemon-gbl/mons.db"
+    }
+  }
+}
