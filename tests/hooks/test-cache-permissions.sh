@@ -66,11 +66,15 @@ assert_passthrough \
 # --- Bash: python3 plugin scripts ---
 assert_allows \
   "Bash python3 pokemon-gbl query_types.py" \
-  '{"tool_name":"Bash","tool_input":{"command":"python3 /Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/skills/type-chart/scripts/query_types.py fire water"}}'
+  '{"tool_name":"Bash","tool_input":{"command":"python3 /some/path/pokemon-gbl/1.0.3/skills/type-chart/scripts/query_types.py fire water"}}'
 
 assert_allows \
   "Bash python3 pokemon-gbl gen_question.py" \
-  '{"tool_name":"Bash","tool_input":{"command":"python3 /Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/skills/quiz/scripts/gen_question.py"}}'
+  '{"tool_name":"Bash","tool_input":{"command":"python3 /some/path/pokemon-gbl/1.0.3/skills/quiz/scripts/gen_question.py"}}'
+
+assert_allows \
+  "Bash python3 with CLAUDE_PLUGIN_ROOT env prefix" \
+  '{"tool_name":"Bash","tool_input":{"command":"CLAUDE_PLUGIN_ROOT=\"/some/path/pokemon-gbl/1.0.3\" python3 /some/path/pokemon-gbl/1.0.3/skills/type-chart/scripts/query_types.py water ice"}}'
 
 assert_passthrough \
   "Bash python3 non-plugin script" \
@@ -112,11 +116,11 @@ assert_passthrough \
 # --- Read ---
 assert_allows \
   "Read template from pokemon-gbl plugin dir" \
-  '{"tool_name":"Read","tool_input":{"file_path":"/Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/skills/type-chart/templates/type_chart_template.json"}}'
+  '{"tool_name":"Read","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/skills/type-chart/templates/type_chart_template.json"}}'
 
 assert_allows \
   "Read data file from pokemon-gbl plugin dir" \
-  '{"tool_name":"Read","tool_input":{"file_path":"/Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/.cache/type_chart.json"}}'
+  '{"tool_name":"Read","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/.cache/type_chart.json"}}'
 
 assert_passthrough \
   "Read from unrelated path" \
@@ -161,11 +165,11 @@ assert_decision_allow() {
 
 assert_decision_allow \
   "PermissionRequest: mkdir .cache (sensitive file guard)" \
-  '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"mkdir -p /Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/.cache"}}'
+  '{"hook_event_name":"PermissionRequest","tool_name":"Bash","tool_input":{"command":"mkdir -p /some/path/pokemon-gbl/1.0.3/.cache"}}'
 
 assert_decision_allow \
   "PermissionRequest: Write type_chart.json (sensitive file guard)" \
-  '{"hook_event_name":"PermissionRequest","tool_name":"Write","tool_input":{"file_path":"/Users/bshoop/.claude/plugins/cache/shooperman-claude-plugins/pokemon-gbl/1.0.3/.cache/type_chart.json","content":"{}"}}'
+  '{"hook_event_name":"PermissionRequest","tool_name":"Write","tool_input":{"file_path":"/some/path/pokemon-gbl/1.0.3/.cache/type_chart.json","content":"{}"}}'
 
 assert_passthrough \
   "PermissionRequest: mkdir non-cache path passes through" \
