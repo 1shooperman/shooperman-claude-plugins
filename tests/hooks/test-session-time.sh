@@ -21,6 +21,10 @@ assert() {
 
 echo "  session-time.sh"
 
+# Clean up any stale lock for this test run
+LOCK_FILE="/tmp/claude-session-time-$$.lock"
+rm -f "$LOCK_FILE"
+
 out=$(bash "$SCRIPT")
 
 # Output is valid JSON
@@ -48,6 +52,32 @@ fi
 # Script exits 0
 bash "$SCRIPT" > /dev/null
 assert "script exits 0" "ok"
+
+# Deduplication: second call in same session (same PPID lock) produces no output
+LOCK_FILE="/tmp/claude-session-time-$$.lock"
+touch "$LOCK_FILE"
+second_out=$(bash "$SCRIPT")
+if [ -z "$second_out" ]; then
+  assert "second call in same session produces no output" "ok"
+else
+  assert "second call in same session produces no output" "got output: $second_out"
+fi
+rm -f "$LOCK_FILE"
+
+# Deduplication: all three plugin copies are identical (same fix applied everywhere)
+SCRIPTS=(
+  "$(cd "$(dirname "$0")/../.." && pwd)/plugins/custom-plugin-tools/hooks/scripts/session-time.sh"
+  "$(cd "$(dirname "$0")/../.." && pwd)/plugins/fitness-coach/hooks/scripts/session-time.sh"
+  "$(cd "$(dirname "$0")/../.." && pwd)/plugins/pokemon-gbl/hooks/scripts/session-time.sh"
+)
+all_same="ok"
+for s in "${SCRIPTS[@]}"; do
+  if ! diff -q "$SCRIPT" "$s" > /dev/null 2>&1; then
+    all_same="$s differs"
+    break
+  fi
+done
+assert "all three plugin session-time.sh scripts are identical" "$all_same"
 
 echo ""
 echo "    $pass passed, $fail failed"
