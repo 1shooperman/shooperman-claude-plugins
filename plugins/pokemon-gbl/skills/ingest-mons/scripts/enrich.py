@@ -35,15 +35,19 @@ TYPE_OVERRIDES: dict[str, list[str]] = {
 
 def pokeapi_name(species: str, form: str | None) -> str:
     n = species.lower().replace(" ", "-").replace("'", "").replace(".", "")
-    if form == "Alolan":   return f"{n}-alola"
-    if form == "Galarian": return f"{n}-galar"
+    if form == "Alolan":
+        return f"{n}-alola"
+    if form == "Galarian":
+        return f"{n}-galar"
     return n
 
 
 def sprite_url(species: str, form: str | None) -> str:
     n = species.lower().replace(" ", "-").replace("'", "").replace(".", "")
-    if form == "Alolan":   n = f"{n}-alolan"
-    if form == "Galarian": n = f"{n}-galarian"
+    if form == "Alolan":
+        n = f"{n}-alolan"
+    elif form == "Galarian":
+        n = f"{n}-galarian"
     return f"https://img.pokemondb.net/sprites/home/normal/{n}.png"
 
 
