@@ -319,3 +319,177 @@ def test_load_token_explicit_env_file_no_token(monkeypatch, tmp_path):
     env_file.write_text("OTHER_VAR=foo\n")
     result = load_slack_token(tmp_path / "file.md", str(env_file))
     assert result is None
+
+
+# --- convert_inline (additional cases) ---
+
+def test_convert_inline_backtick_unchanged():
+    """Inline code spans are not modified by convert_inline."""
+    assert convert_inline("`some code`") == "`some code`"
+
+
+def test_convert_inline_bold_and_italic_together():
+    """Bold and italic in the same string are each converted independently."""
+    result = convert_inline("**bold** and *italic*")
+    assert "*bold*" in result
+    assert "_italic_" in result
+
+
+# --- markdown_to_slack (additional cases) ---
+
+def test_bullet_plus():
+    """'+' list marker is converted to a bullet."""
+    assert markdown_to_slack("+ item") == "• item"
+
+
+def test_task_list_uppercase_X():
+    """'- [X] done' (uppercase X) is treated as checked."""
+    assert markdown_to_slack("- [X] done") == "• [x] done"
+
+
+def test_code_fence_with_language_tag():
+    """A fenced code block with a language tag still outputs bare triple-backticks."""
+    md = "```python\nprint('hi')\n```"
+    result = markdown_to_slack(md)
+    assert "```" in result
+    assert "print('hi')" in result
+
+
+def test_horizontal_rule_passthrough():
+    """A line that is not a heading, list, or quote passes through convert_inline unchanged."""
+    assert markdown_to_slack("---") == "---"
+
+
+# --- resolve_channel_id (additional cases) ---
+
+def test_resolve_channel_id_name_without_hash(monkeypatch):
+    """A bare channel name (no '#' prefix) is looked up via _iter_channels."""
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "_iter_channels", lambda token: iter([{"name": "general", "id": "CGENERAL001"}]))
+    result = resolve_channel_id("xoxb-fake", "general")
+    assert result == "CGENERAL001"
+
+
+def test_resolve_channel_id_empty_channel_list_raises(monkeypatch):
+    """An empty channel list raises RuntimeError with an informative message."""
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "_iter_channels", lambda token: iter([]))
+    with pytest.raises(RuntimeError, match="Could not resolve channel name"):
+        resolve_channel_id("xoxb-fake", "emptychannel")
+
+
+# --- _api_post error paths ---
+
+def test_api_post_http_error_raises_runtime_error(monkeypatch):
+    """An HTTP error from Slack raises RuntimeError with the status code."""
+    import urllib.error
+    import publish_markdown_to_slack as _mod
+
+    def _raise(*args, **kwargs):
+        raise urllib.error.HTTPError(url="https://slack.com/api/test", code=400, msg="Bad Request", hdrs=None, fp=None)
+
+    monkeypatch.setattr(_mod.urllib.request, "urlopen", _raise)
+    with pytest.raises(RuntimeError, match="Slack HTTP error 400"):
+        _mod._api_post("xoxb-fake", "chat.postMessage", {"channel": "C1", "text": "hi"})
+
+
+def test_api_post_url_error_raises_runtime_error(monkeypatch):
+    """A URLError (network failure) raises RuntimeError with connection detail."""
+    import urllib.error
+    import publish_markdown_to_slack as _mod
+
+    def _raise(*args, **kwargs):
+        raise urllib.error.URLError(reason="Name or service not known")
+
+    monkeypatch.setattr(_mod.urllib.request, "urlopen", _raise)
+    with pytest.raises(RuntimeError, match="Slack connection error"):
+        _mod._api_post("xoxb-fake", "chat.postMessage", {"channel": "C1", "text": "hi"})
+
+
+def test_api_post_ok_false_raises_runtime_error(monkeypatch):
+    """A 200 response with ok=false raises RuntimeError with the Slack error string."""
+    import io
+    import publish_markdown_to_slack as _mod
+
+    class _FakeResp:
+        def __enter__(self):
+            return self
+        def __exit__(self, *_):
+            pass
+        def read(self):
+            return b'{"ok": false, "error": "not_authed"}'
+
+    monkeypatch.setattr(_mod.urllib.request, "urlopen", lambda *a, **kw: _FakeResp())
+    with pytest.raises(RuntimeError, match="not_authed"):
+        _mod._api_post("xoxb-fake", "chat.postMessage", {"channel": "C1", "text": "hi"})
+
+
+# --- _iter_channels pagination ---
+
+def test_iter_channels_pagination(monkeypatch):
+    """_iter_channels follows next_cursor and yields channels from both pages."""
+    import publish_markdown_to_slack as _mod
+
+    call_count = 0
+    pages = [
+        {"ok": True, "channels": [{"name": "alpha", "id": "C0000000001"}],
+         "response_metadata": {"next_cursor": "cursor-abc"}},
+        {"ok": True, "channels": [{"name": "beta", "id": "C0000000002"}],
+         "response_metadata": {"next_cursor": ""}},
+    ]
+
+    def _fake_api_post(token, endpoint, payload):
+        nonlocal call_count
+        result = pages[call_count]
+        call_count += 1
+        return result
+
+    monkeypatch.setattr(_mod, "_api_post", _fake_api_post)
+    channels = list(_mod._iter_channels("xoxb-fake"))
+    assert len(channels) == 2
+    assert channels[0]["name"] == "alpha"
+    assert channels[1]["name"] == "beta"
+    assert call_count == 2
+
+
+# --- load_slack_token (additional cases) ---
+
+def test_load_token_export_prefix_in_dotenv(monkeypatch, tmp_path):
+    """A dotenv line with 'export ' prefix is parsed and the token is returned."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    (tmp_path / ".env").write_text("export SLACK_BOT_TOKEN=xoxb-export\n")
+    monkeypatch.chdir(tmp_path)
+    assert load_slack_token(tmp_path / "file.md", None) == "xoxb-export"
+
+
+# --- main (additional cases) ---
+
+def test_main_with_env_file_arg(monkeypatch, tmp_path, capsys):
+    """--env-file argument is forwarded to load_slack_token and used for the token."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    md = tmp_path / "msg.md"
+    md.write_text("Hello\n")
+    env_file = tmp_path / "custom.env"
+    env_file.write_text("SLACK_BOT_TOKEN=xoxb-custom\n")
+
+    import publish_markdown_to_slack as _mod
+    from publish_markdown_to_slack import SlackResult
+    monkeypatch.setattr(_mod, "resolve_channel_id", lambda token, ch: "CABCDEF123")
+    monkeypatch.setattr(_mod, "post_message", lambda token, ch, text: SlackResult(channel="CABCDEF123", ts="111.222"))
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "#general", "--env-file", str(env_file)])
+    assert main() == 0
+
+
+def test_main_post_message_runtime_error_exits_1(monkeypatch, tmp_path, capsys):
+    """A RuntimeError from post_message is caught, printed to stderr, exits 1."""
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    md = tmp_path / "msg.md"
+    md.write_text("Hello\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "CABCDEF123"])
+
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "resolve_channel_id", lambda token, ch: "CABCDEF123")
+    monkeypatch.setattr(_mod, "post_message", lambda *_: (_ for _ in ()).throw(RuntimeError("message_too_long")))
+    assert main() == 1
+    err = capsys.readouterr().err
+    assert "message_too_long" in err
