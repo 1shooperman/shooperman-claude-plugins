@@ -56,7 +56,12 @@ def fetch_types(api_name: str) -> list[str]:
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "pokemon-gbl-plugin"})
         with urllib.request.urlopen(req, timeout=10) as r:
-            return [t["type"]["name"] for t in json.loads(r.read())["types"]]
+            data = json.loads(r.read())
+            types_list = data.get("types")
+            if types_list is None:
+                print(f"  WARN types {api_name} → missing 'types' field in response")
+                return []
+            return [t.get("type", {}).get("name") for t in types_list if t.get("type", {}).get("name")]
     except Exception as e:
         print(f"  WARN types {api_name} → {e}")
         return []
@@ -75,7 +80,11 @@ def main():
         print("Run fetch_move_data.py first.", file=sys.stderr)
         sys.exit(1)
 
-    move_data: dict = json.loads(MOVE_DATA.read_text())
+    try:
+        move_data: dict = json.loads(MOVE_DATA.read_text())
+    except json.JSONDecodeError as e:
+        print(f"ERROR: corrupt move_data.json at {MOVE_DATA}: {e}", file=sys.stderr)
+        sys.exit(1)
     print(f"Loaded {len(move_data)} move entries")
 
     conn = sqlite3.connect(db_path)

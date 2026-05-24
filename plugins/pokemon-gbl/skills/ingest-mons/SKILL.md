@@ -18,6 +18,10 @@ Parse optional `csv_path` and `db_path` from `$ARGUMENTS`. If not provided, use 
 
 ## Instructions
 
+### Step 0 — Validate paths
+
+Before constructing any Bash command, verify that `csv_path` and `db_path` contain only valid filesystem path characters: alphanumeric, `/`, `.`, `_`, `-`, `~`. If either value contains shell metacharacters (spaces, `$`, `;`, `|`, `&`, `>`, `<`, `` ` ``, `(`, `)`, or quotes), **abort** and tell the user the path is invalid — do not run any script.
+
 Run the full ingest pipeline in order:
 
 ### Step 1 — Ingest CSV

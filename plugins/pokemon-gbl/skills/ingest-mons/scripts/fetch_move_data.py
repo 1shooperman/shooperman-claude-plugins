@@ -10,6 +10,7 @@ Run after /get-rankings has populated the rankings cache, and before enrich.py.
 
 import json
 import re
+import sys
 import time
 import urllib.request
 from pathlib import Path
@@ -49,8 +50,12 @@ def fetch_move_info(api_name: str) -> dict | None:
         req = urllib.request.Request(url, headers={"User-Agent": "pokemon-gbl-plugin"})
         with urllib.request.urlopen(req, timeout=10) as r:
             data = json.loads(r.read())
+            type_entry = data.get("type") or {}
+            move_type = type_entry.get("name")
+            if move_type is None:
+                print(f"  WARN: {api_name} → missing type field in response")
             return {
-                "type": data["type"]["name"],
+                "type": move_type,
                 "power": data.get("power"),
             }
     except Exception as e:
@@ -66,7 +71,12 @@ def collect_moves() -> set[str]:
         print("Run /get-rankings first to populate the rankings cache.")
         raise SystemExit(1)
     for f in cache_files:
-        for entry in json.loads(f.read_text()):
+        try:
+            entries = json.loads(f.read_text())
+        except json.JSONDecodeError as e:
+            print(f"ERROR: corrupt rankings cache file {f}: {e}", file=sys.stderr)
+            sys.exit(1)
+        for entry in entries:
             for move_id in entry.get("moveset", []):
                 moves.add(move_display_name(move_id))
     print(f"Found {len(moves)} unique moves across {len(cache_files)} cache files")
@@ -76,7 +86,11 @@ def collect_moves() -> set[str]:
 def main():
     existing: dict[str, dict] = {}
     if OUTPUT.exists():
-        existing = json.loads(OUTPUT.read_text())
+        try:
+            existing = json.loads(OUTPUT.read_text())
+        except json.JSONDecodeError as e:
+            print(f"ERROR: corrupt move_data.json at {OUTPUT}: {e}", file=sys.stderr)
+            sys.exit(1)
         print(f"Loaded {len(existing)} existing entries from {OUTPUT}")
 
     moves = collect_moves()
