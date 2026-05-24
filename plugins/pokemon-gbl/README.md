@@ -52,13 +52,26 @@ After ingesting, the skill also:
 1. Fetches move type metadata (from PokeAPI, cached at `~/.cache/pokemon-gbl/move_data.json`) — requires the rankings cache to exist first (`/get-rankings`)
 2. Enriches each mon with types, sprite URL, and move type/energy/turn counts
 
+> **Note:** Types and sprite URLs are not preserved across re-ingests. Running `/ingest-mons` clears them; the enrich step (Step 3) must run after every ingest to repopulate them. If a mon's types cannot be resolved from PokeAPI, enrich will exit with an error — add the mon to `TYPE_OVERRIDES` in `enrich.py` to fix it.
+
 ## Data Sources
 
-- **pvpoke.com** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
-- **pokemondb.net** — GO type matchup chart (fetched once, cached indefinitely at `~/.cache/pokemon-gbl/type_chart.json`)
-- **pokemongo.com/en/news** — GO Battle League news for move change context
-- **pokeapi.co** — Pokemon types and move metadata (fetched on first enrich, cached in `~/.cache/pokemon-gbl/move_data.json`)
+- **[PvPoke](https://pvpoke.com)** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
+- **[PokemonDB](https://pokemondb.net)** — GO type matchup chart and sprite images (type chart fetched once, cached indefinitely at `~/.cache/pokemon-gbl/type_chart.json`)
+- **[PokeAPI](https://pokeapi.co)** — Pokemon types and move metadata (fetched on first enrich, cached in `~/.cache/pokemon-gbl/move_data.json`)
+- **[Pokemon GO](https://pokemongo.com/en/news)** — GO Battle League news for move change context
 - **mons.db** — personal pokemon collection (SQLite, written by `ingest-mons`, queried via the `mons-db` MCP server at `~/.cache/pokemon-gbl/mons.db`)
+
+## Attribution
+
+This plugin relies on data from third-party sources. All data belongs to their respective owners:
+
+- Rankings data provided by **[PvPoke](https://pvpoke.com)** — an open-source GO Battle League ranking and team-building tool
+- Type chart and sprite images provided by **[PokemonDB](https://pokemondb.net)**
+- Pokemon species and move data provided by **[PokeAPI](https://pokeapi.co)** — a free, open RESTful API
+- Pokemon GO is a trademark of **Niantic, Inc.** Pokémon and all related names are trademarks of **Nintendo / Creatures Inc. / GAME FREAK inc.**
+
+This plugin is not affiliated with or endorsed by any of the above.
 
 ## MCP Server
 

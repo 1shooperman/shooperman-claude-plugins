@@ -51,7 +51,7 @@ def sprite_url(species: str, form: str | None) -> str:
     return f"https://img.pokemondb.net/sprites/home/normal/{n}.png"
 
 
-def fetch_types(api_name: str) -> list[str]:
+def fetch_types(api_name: str) -> list[str] | None:
     url = f"https://pokeapi.co/api/v2/pokemon/{api_name}"
     try:
         req = urllib.request.Request(url, headers={"User-Agent": "pokemon-gbl-plugin"})
@@ -60,11 +60,11 @@ def fetch_types(api_name: str) -> list[str]:
             types_list = data.get("types")
             if types_list is None:
                 print(f"  WARN types {api_name} → missing 'types' field in response")
-                return []
+                return None
             return [t.get("type", {}).get("name") for t in types_list if t.get("type", {}).get("name")]
     except Exception as e:
         print(f"  WARN types {api_name} → {e}")
-        return []
+        return None
 
 
 def main():
@@ -89,9 +89,14 @@ def main():
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
+
+    # Clear previously-poisoned rows so they are re-fetched this run.
+    conn.execute("UPDATE mons SET types = NULL WHERE types = '[]'")
+    conn.commit()
+
     rows = conn.execute("SELECT * FROM mons").fetchall()
 
-    type_cache: dict[str, list[str]] = {}
+    type_cache: dict[str, list[str] | None] = {}
     updated = 0
 
     for row in rows:
@@ -108,6 +113,11 @@ def main():
                 time.sleep(0.25)
 
         types = type_cache[key]
+        if types is None:
+            print(f"ERROR: types unresolved for {key} — add to TYPE_OVERRIDES or fix pokeapi_name()", file=sys.stderr)
+            conn.close()
+            sys.exit(1)
+
         url = SPRITE_OVERRIDES.get(key) or sprite_url(species, form)
 
         def move_info(name: str | None) -> dict:
@@ -152,6 +162,7 @@ def main():
     conn.commit()
     conn.close()
     print(f"\n✓ Enriched {updated} mons in {db_path}")
+
 
 
 if __name__ == "__main__":
