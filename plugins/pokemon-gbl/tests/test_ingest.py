@@ -117,8 +117,9 @@ def test_load_existing_enriched_returns_data(tmp_path):
     key = ("Registeel", 1484, "")
     assert key in result
     assert result[key]["fast_move"] == "Metal Claw"
-    assert result[key]["types"] == '["steel"]'
-    assert result[key]["sprite_url"] == "http://x.png"
+    # types and sprite_url are no longer in ENRICHED_COLUMNS; enrich.py owns them
+    assert "types" not in result[key]
+    assert "sprite_url" not in result[key]
     conn.close()
 
 
@@ -156,15 +157,15 @@ def test_ingest_preserves_enriched_on_reingest(tmp_path):
     conn.commit()
     conn.close()
 
-    # Re-ingest — enriched data should survive
+    # Re-ingest — move assignments survive, but types/sprite_url are cleared (owned by enrich.py)
     ingest(csv_file, db)
 
     conn = sqlite3.connect(db)
     conn.row_factory = sqlite3.Row
     row = conn.execute("SELECT * FROM mons WHERE raw_name='Registeel'").fetchone()
-    assert row["types"] == '["steel"]'
-    assert row["sprite_url"] == "http://registeel.png"
     assert row["fast_move"] == "Metal Claw"
+    assert row["types"] is None
+    assert row["sprite_url"] is None
     conn.close()
 
 def test_ingest_shadow_from_name(tmp_path):

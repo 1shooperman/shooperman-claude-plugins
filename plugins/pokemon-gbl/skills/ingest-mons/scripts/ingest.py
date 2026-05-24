@@ -49,8 +49,7 @@ ENRICHED_COLUMNS = [
     ("charge_move_2_type",    "TEXT"),
     ("charge_move_2_energy",  "INTEGER"),
     ("charge_move_2_attacks", "INTEGER"),
-    ("types",                 "TEXT"),
-    ("sprite_url",            "TEXT"),
+    # types and sprite_url are excluded: populated exclusively by enrich.py
 ]
 
 FORM_KEYWORDS = {"Alolan", "Galarian", "Hisuian", "Paldean", "Unovan"}

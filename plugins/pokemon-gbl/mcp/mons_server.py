@@ -60,7 +60,16 @@ TOOLS = [
 
 
 def row_to_dict(row: sqlite3.Row) -> dict:
-    return {k: row[k] for k in row.keys()}
+    d = {k: row[k] for k in row.keys()}
+    raw = d.get("types")
+    if raw:
+        try:
+            d["types"] = json.loads(raw)
+        except (json.JSONDecodeError, TypeError):
+            d["types"] = []
+    else:
+        d["types"] = []
+    return d
 
 
 def db():

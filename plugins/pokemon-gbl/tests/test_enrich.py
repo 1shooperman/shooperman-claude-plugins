@@ -157,3 +157,63 @@ def test_enrich_uses_type_override(tmp_path, monkeypatch):
     row = conn.execute("SELECT * FROM mons").fetchone()
     assert json.loads(row["types"]) == ["steel", "ghost"]
     conn.close()
+
+
+def test_fetch_types_returns_none_on_exception(monkeypatch):
+    import urllib.request
+    def bad_open(*a, **kw):
+        raise OSError("network failure")
+    monkeypatch.setattr(urllib.request, "urlopen", bad_open)
+    result = enrich.fetch_types("registeel")
+    assert result is None
+
+
+def test_enrich_exits_nonzero_on_unresolved_types(tmp_path, monkeypatch):
+    db = tmp_path / "mons.db"
+    move_data_file = tmp_path / "move_data.json"
+    move_data_file.write_text("{}")
+
+    _make_db(db, [{
+        "raw_name": "Unknown", "species": "Unknown", "form": None,
+        "fast_move": None, "charge_move_1": None, "charge_move_2": None,
+    }])
+
+    monkeypatch.setattr(enrich, "MOVE_DATA", move_data_file)
+    monkeypatch.setattr(enrich, "DEFAULT_DB", db)
+    monkeypatch.setattr(enrich, "fetch_types", lambda _: None)
+
+    import sys as _sys
+    monkeypatch.setattr(_sys, "argv", ["enrich.py"])
+    with pytest.raises(SystemExit) as exc:
+        enrich.main()
+    assert exc.value.code != 0
+
+
+def test_enrich_clears_poisoned_empty_types(tmp_path, monkeypatch):
+    db = tmp_path / "mons.db"
+    move_data_file = tmp_path / "move_data.json"
+    move_data_file.write_text("{}")
+
+    _make_db(db, [{
+        "raw_name": "Registeel", "species": "Registeel", "form": None,
+        "fast_move": None, "charge_move_1": None, "charge_move_2": None,
+    }])
+    # Pre-poison the row with '[]'
+    conn = sqlite3.connect(db)
+    conn.execute("UPDATE mons SET types = '[]'")
+    conn.commit()
+    conn.close()
+
+    monkeypatch.setattr(enrich, "MOVE_DATA", move_data_file)
+    monkeypatch.setattr(enrich, "DEFAULT_DB", db)
+    monkeypatch.setattr(enrich, "fetch_types", lambda _: ["steel"])
+
+    import sys as _sys
+    monkeypatch.setattr(_sys, "argv", ["enrich.py"])
+    enrich.main()
+
+    conn = sqlite3.connect(db)
+    conn.row_factory = sqlite3.Row
+    row = conn.execute("SELECT types FROM mons").fetchone()
+    assert json.loads(row["types"]) == ["steel"]
+    conn.close()
