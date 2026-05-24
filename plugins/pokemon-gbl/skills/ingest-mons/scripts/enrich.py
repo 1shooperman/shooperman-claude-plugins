@@ -24,12 +24,12 @@ SPRITE_OVERRIDES: dict[str, str] = {
 }
 
 TYPE_OVERRIDES: dict[str, list[str]] = {
-    "Aegislash__None":         ["steel", "ghost"],
-    "Jellicent__None":         ["water", "ghost"],
-    "Gourgeist__None":         ["ghost", "grass"],
-    "Morpeko__None":           ["dark", "electric"],
-    "Wormadam__Trash Cloak":   ["bug", "steel"],
-    "Shaymin__Sky":            ["grass", "flying"],
+    "Aegislash__None":        ["steel", "ghost"],
+    "Jellicent__None":        ["water", "ghost"],
+    "Gourgeist__None":        ["ghost", "grass"],
+    "Morpeko__None":          ["dark", "electric"],
+    "Wormadam__Trash Cloak":  ["bug", "steel"],
+    "Shaymin__Sky":           ["grass", "flying"],
 }
 
 
@@ -39,6 +39,10 @@ def pokeapi_name(species: str, form: str | None) -> str:
         return f"{n}-alola"
     if form == "Galarian":
         return f"{n}-galar"
+    if form == "Male":
+        return f"{n}-male"
+    if form == "Female":
+        return f"{n}-female"
     return n
 
 
