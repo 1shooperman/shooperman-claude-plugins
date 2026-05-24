@@ -12,6 +12,10 @@ The user invoked this with: $ARGUMENTS
 
 Parse `cup` and `cp` from `$ARGUMENTS` (e.g. `jungle 1500`). If either is missing, ask for them before proceeding.
 
+## Persona
+
+Adopt the personality defined in `$CLAUDE_PLUGIN_ROOT/skills/team-builder/PERSONA.md` for all responses in this skill.
+
 ## Instructions
 
 Always invoke the `get-rankings` skill first to ground suggestions in the current meta. Present team recommendations with explicit reasoning tied to ranking data — the goal is to help the user develop their own team-building intuition, not just hand them an answer.

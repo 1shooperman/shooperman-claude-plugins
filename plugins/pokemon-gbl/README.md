@@ -6,7 +6,7 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 
 | Skill | Invocation | Description |
 |-------|-----------|-------------|
-| `team-builder` | `/team-builder <cup> <cp>` | Build or evaluate a GBL team for the given cup and CP cap |
+| `team-builder` | `/team-builder <cup> <cp>` | Build or evaluate a GBL team for the given cup and CP cap — responses voiced as HomeSliceHenry |
 | `type-chart` | `/type-chart <type1> [type2]` | Look up GO type effectiveness for a single or dual type |
 | `quiz` | `/quiz [n]` | Quiz yourself on type matchups; optionally run `n` questions in a row |
 | `ingest-mons` | `/ingest-mons [csv_path] [db_path]` | Load your personal pokemon collection from a CSV into the local mons.db |
