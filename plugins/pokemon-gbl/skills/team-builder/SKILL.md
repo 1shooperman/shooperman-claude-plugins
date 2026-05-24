@@ -26,3 +26,5 @@ Before offering alternatives for expensive or unavailable picks, check the `mons
 2. Recommended team with role for each slot (lead / safe switch / closer)
 3. Why each pick addresses the meta
 4. One or two budget/accessible alternatives based on the user's available Pokemon
+
+Do not assume a poor pvp iv is a _bad_ pokemon, just call it out as a potential hole.
