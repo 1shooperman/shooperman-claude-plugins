@@ -16,26 +16,7 @@ Parse `<markdown-file>` and `<channel>` from `$ARGUMENTS`. Both are required —
 
 ## Workflow
 
-1. **Check for `SLACK_BOT_TOKEN`** before anything else:
-   ```bash
-   python3 -c "
-   import os, sys
-   from pathlib import Path
-
-   token = os.environ.get('SLACK_BOT_TOKEN')
-   if not token:
-       for f in [Path.cwd() / '.env', Path.cwd() / '.env.local']:
-           if f.is_file():
-               for line in f.read_text().splitlines():
-                   line = line.strip()
-                   if line.startswith('SLACK_BOT_TOKEN='):
-                       token = line.split('=', 1)[1].strip().strip('\"').strip(\"'\")
-                       break
-               if token:
-                   break
-   sys.exit(0 if token else 1)
-   "
-   ```
+1. **Check for `SLACK_BOT_TOKEN`** before anything else — use the `slack-publish:agent-token-checker` agent. If it reports "Token missing", **stop here** and show the user this guidance:
    If this exits non-zero, **stop here** and show the user this guidance:
 
    > **`SLACK_BOT_TOKEN` is not set.** To publish to Slack you need a bot token. Here's how to get one:
