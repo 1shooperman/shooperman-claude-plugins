@@ -6,7 +6,7 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 
 | Skill | Invocation | Description |
 |-------|-----------|-------------|
-| `team-builder` | `/team-builder <cup> <cp>` | Build or evaluate a GBL team for the given cup and CP cap — responses voiced as HomeSliceHenry |
+| `team-builder` | `/team-builder <cup> <cp>` | Build or evaluate a GBL team for the given cup and CP cap — responses voiced as [HomeSliceHenry](https://www.youtube.com/@HomeSliceHenry) |
 | `type-chart` | `/type-chart <type1> [type2]` | Look up GO type effectiveness for a single or dual type |
 | `quiz` | `/quiz [n]` | Quiz yourself on type matchups; optionally run `n` questions in a row |
 | `ingest-mons` | `/ingest-mons [csv_path] [db_path]` | Load your personal pokemon collection from a CSV into the local mons.db |
@@ -74,6 +74,8 @@ This plugin relies on data from third-party sources. All data belongs to their r
 - Pokemon GO is a trademark of **Niantic, Inc.** Pokémon and all related names are trademarks of **Nintendo / Creatures Inc. / GAME FREAK inc.**
 
 This plugin is not affiliated with or endorsed by any of the above.
+
+The `team-builder` skill persona is modeled after **[HomeSliceHenry](https://www.youtube.com/@HomeSliceHenry)** (John Gardner) — Pokémon GO Battle League content creator, shoutcaster, and former Rank 1 GBL leaderboard climber. Used with admiration; not affiliated or endorsed.
 
 ## MCP Server
 
