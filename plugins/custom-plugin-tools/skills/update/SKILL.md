@@ -27,7 +27,7 @@ If no PR exists, tell the user and stop.
    - `agent-change-summarizer` — produces `## Summary` and `## Components`
    - `agent-security-auditor` — produces `## Security`
    - `agent-test-planner` — produces `## Test plan`
-   - `agent-sdet` — writes any missing `tests/hooks/test-*.sh` files; returns a brief summary (not a PR body section)
+   - `agent-sdet` — writes any missing `tests/**/test-*.sh` files; returns a brief summary (not a PR body section)
 
 3. Assemble the final PR body in this order:
    ```
