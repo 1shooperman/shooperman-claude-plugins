@@ -52,6 +52,8 @@ After ingesting, the skill also:
 1. Fetches move type metadata (from PokeAPI, cached at `~/.cache/pokemon-gbl/move_data.json`) — requires the rankings cache to exist first (`/get-rankings`)
 2. Enriches each mon with types, sprite URL, and move type/energy/turn counts
 
+> **Note:** Types and sprite URLs are not preserved across re-ingests. Running `/ingest-mons` clears them; the enrich step (Step 3) must run after every ingest to repopulate them. If a mon's types cannot be resolved from PokeAPI, enrich will exit with an error — add the mon to `TYPE_OVERRIDES` in `enrich.py` to fix it.
+
 ## Data Sources
 
 - **pvpoke.com** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
