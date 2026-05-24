@@ -10,6 +10,7 @@ from publish_markdown_to_slack import (
     _parse_dotenv,
     convert_inline,
     load_slack_token,
+    main,
     markdown_to_slack,
 )
 
@@ -174,3 +175,34 @@ def test_load_token_missing(monkeypatch, tmp_path):
     monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
     monkeypatch.chdir(tmp_path)
     assert load_slack_token(tmp_path / "file.md", None) is None
+
+
+# --- main ---
+
+def test_main_missing_token_exits_1(monkeypatch, tmp_path, capsys):
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    monkeypatch.chdir(tmp_path)
+    md = tmp_path / "msg.md"
+    md.write_text("# Hello\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "#general"])
+    assert main() == 1
+    err = capsys.readouterr().err
+    assert "SLACK_BOT_TOKEN" in err
+
+
+def test_main_missing_file_exits_1(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    monkeypatch.setattr(sys, "argv", ["prog", str(tmp_path / "missing.md"), "#general"])
+    assert main() == 1
+    err = capsys.readouterr().err
+    assert "not found" in err
+
+
+def test_main_dry_run_prints_and_exits_0(monkeypatch, tmp_path, capsys):
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    md = tmp_path / "msg.md"
+    md.write_text("# Hello\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "#general", "--dry-run"])
+    assert main() == 0
+    out = capsys.readouterr().out
+    assert "*Hello*" in out
