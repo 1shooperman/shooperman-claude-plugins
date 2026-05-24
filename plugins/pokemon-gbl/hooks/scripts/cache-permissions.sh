@@ -29,11 +29,11 @@ case "$tool_name" in
   Bash)
     cmd=$(echo "$input" | jq -r '.tool_input.command // ""')
     # python3 running a pokemon-gbl plugin script (with or without leading env var prefix)
-    if [[ "$cmd" == *"python3"* ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]]; then
+    if [[ "$cmd" == *"python3"* ]] && [[ "$cmd" == *"/pokemon-gbl/"* ]] && [[ "$cmd" == *"/skills/"* ]]; then
       allow "pokemon-gbl: python3 plugin script approved"
     # non-destructive operations targeting the pokemon-gbl cache directory
     elif [[ "$cmd" == *"/.cache/pokemon-gbl"* ]] && \
-         ! [[ "$cmd" =~ ^(rm|rmdir|mv|chmod|chown)[[:space:]] ]]; then
+         ! [[ "$cmd" =~ (^|[[:space:]])(rm|rmdir|mv|chmod|chown)[[:space:]] ]]; then
       allow "pokemon-gbl: pokemon-gbl cache operation approved"
     fi
     ;;

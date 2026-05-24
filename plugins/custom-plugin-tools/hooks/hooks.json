@@ -1,9 +1,9 @@
 {
   "description": "custom-plugin-tools plugin hooks",
   "hooks": {
-    "SessionStart": [
+    "PreToolUse": [
       {
-        "matcher": "*",
+        "matcher": "WebFetch",
         "hooks": [
           {
             "type": "command",

@@ -24,11 +24,40 @@ A Claude Code plugin for building and evaluating Pokemon GO Battle League (GBL) 
 /ingest-mons ~/my_export.csv
 ```
 
+## CSV Format
+
+The `ingest-mons` skill expects a CSV with these columns:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `name` | string | Pokemon display name. Append `(Alolan)`, `(Galarian)`, etc. for regional forms; append `(Shadow)` or `(Alolan Shadow)` for shadow/form combos. |
+| `shadow` | bool | `true` / `false` |
+| `purified` | bool | `true` / `false` |
+| `cp` | integer | CP at time of export |
+| `gl_rank` | integer | Great League rank (leave blank if unranked) |
+| `legacy_move` | bool | `true` if the pokemon has a legacy/event move |
+| `has_return` | bool | `true` if it has Return (purified move) |
+| `notes` | string | Free-form notes (optional) |
+
+Example rows:
+```
+name,shadow,purified,cp,gl_rank,legacy_move,has_return,notes
+Registeel,false,false,1484,1,false,false,
+Medicham,false,false,1499,3,false,false,
+Marowak (Alolan Shadow),true,false,1477,12,true,false,Shadow Bone legacy
+Swampert,false,true,1488,5,false,true,
+```
+
+After ingesting, the skill also:
+1. Fetches move type metadata (from PokeAPI, cached at `~/.cache/pokemon-gbl/move_data.json`) — requires the rankings cache to exist first (`/get-rankings`)
+2. Enriches each mon with types, sprite URL, and move type/energy/turn counts
+
 ## Data Sources
 
-- **pvpoke.com** — rankings JSON (cached locally for 48 hours at `skills/get-rankings/.cache/`)
+- **pvpoke.com** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
 - **pokemondb.net** — GO type matchup chart (fetched once, cached indefinitely at `~/.cache/pokemon-gbl/type_chart.json`)
 - **pokemongo.com/en/news** — GO Battle League news for move change context
+- **pokeapi.co** — Pokemon types and move metadata (fetched on first enrich, cached in `~/.cache/pokemon-gbl/move_data.json`)
 - **mons.db** — personal pokemon collection (SQLite, written by `ingest-mons`, queried via the `mons-db` MCP server at `~/.cache/pokemon-gbl/mons.db`)
 
 ## MCP Server

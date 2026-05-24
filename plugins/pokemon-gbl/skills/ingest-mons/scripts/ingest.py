@@ -12,23 +12,46 @@ DEFAULT_DB = Path.home() / ".cache/pokemon-gbl/mons.db"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS mons (
-    id               INTEGER PRIMARY KEY AUTOINCREMENT,
-    raw_name         TEXT NOT NULL,
-    species          TEXT NOT NULL,
-    form             TEXT,
-    shadow           INTEGER NOT NULL DEFAULT 0,
-    purified         INTEGER NOT NULL DEFAULT 0,
-    cp               INTEGER,
-    gl_rank          INTEGER,
-    fast_move        TEXT,
-    charge_move_1    TEXT,
-    charge_move_2    TEXT,
-    legacy_move      INTEGER NOT NULL DEFAULT 0,
-    legacy_move_name TEXT,
-    has_return       INTEGER NOT NULL DEFAULT 0,
-    notes            TEXT
+    id                    INTEGER PRIMARY KEY AUTOINCREMENT,
+    raw_name              TEXT NOT NULL,
+    species               TEXT NOT NULL,
+    form                  TEXT,
+    shadow                INTEGER NOT NULL DEFAULT 0,
+    purified              INTEGER NOT NULL DEFAULT 0,
+    cp                    INTEGER,
+    gl_rank               INTEGER,
+    fast_move             TEXT,
+    fast_move_type        TEXT,
+    fast_move_turns       INTEGER,
+    charge_move_1         TEXT,
+    charge_move_1_type    TEXT,
+    charge_move_1_energy  INTEGER,
+    charge_move_1_attacks INTEGER,
+    charge_move_2         TEXT,
+    charge_move_2_type    TEXT,
+    charge_move_2_energy  INTEGER,
+    charge_move_2_attacks INTEGER,
+    legacy_move           INTEGER NOT NULL DEFAULT 0,
+    legacy_move_name      TEXT,
+    has_return            INTEGER NOT NULL DEFAULT 0,
+    notes                 TEXT,
+    types                 TEXT,
+    sprite_url            TEXT
 );
 """
+
+ENRICHED_COLUMNS = [
+    ("fast_move_type",        "TEXT"),
+    ("fast_move_turns",       "INTEGER"),
+    ("charge_move_1_type",    "TEXT"),
+    ("charge_move_1_energy",  "INTEGER"),
+    ("charge_move_1_attacks", "INTEGER"),
+    ("charge_move_2_type",    "TEXT"),
+    ("charge_move_2_energy",  "INTEGER"),
+    ("charge_move_2_attacks", "INTEGER"),
+    ("types",                 "TEXT"),
+    ("sprite_url",            "TEXT"),
+]
 
 FORM_KEYWORDS = {"Alolan", "Galarian", "Hisuian", "Paldean", "Unovan"}
 
@@ -66,23 +89,41 @@ def int_or_none(s: str):
     return int(s) if s else None
 
 
-def load_existing_moves(conn) -> dict:
-    """Return dict keyed by (raw_name, cp, notes) → move tuple, taking first match."""
+def load_existing_enriched(conn) -> dict:
+    """Return dict keyed by (raw_name, cp, notes) → enriched fields tuple, taking first match."""
+    existing_cols = {row[1] for row in conn.execute("PRAGMA table_info(mons)").fetchall()}
+    enriched_names = [col for col, _ in ENRICHED_COLUMNS if col in existing_cols]
+    if not enriched_names:
+        return {}
+
+    move_cols = "fast_move, charge_move_1, charge_move_2, legacy_move_name"
+    enriched_cols = ", ".join(enriched_names)
     rows = conn.execute(
-        "SELECT raw_name, cp, notes, fast_move, charge_move_1, charge_move_2, legacy_move_name FROM mons"
+        f"SELECT raw_name, cp, notes, {move_cols}, {enriched_cols} FROM mons"
     ).fetchall()
-    moves = {}
+    result = {}
     for row in rows:
         key = (row[0], row[1], row[2] or "")
-        if key not in moves:
-            moves[key] = (row[3], row[4], row[5], row[6])
-    return moves
+        if key not in result:
+            result[key] = {
+                "fast_move": row[3],
+                "charge_move_1": row[4],
+                "charge_move_2": row[5],
+                "legacy_move_name": row[6],
+                **{name: row[7 + i] for i, name in enumerate(enriched_names)},
+            }
+    return result
 
 
 def ensure_db(db_path: Path):
     db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.executescript(SCHEMA)
+    # Migrate existing DB: add enriched columns if absent
+    existing_cols = {row[1] for row in conn.execute("PRAGMA table_info(mons)").fetchall()}
+    for col, col_type in ENRICHED_COLUMNS:
+        if col not in existing_cols:
+            conn.execute(f"ALTER TABLE mons ADD COLUMN {col} {col_type}")
     conn.commit()
     return conn
 
@@ -91,7 +132,8 @@ def ingest(csv_path: Path, db_path: Path):
     conn = ensure_db(db_path)
     conn.row_factory = sqlite3.Row
 
-    existing_moves = load_existing_moves(conn)
+    existing = load_existing_enriched(conn)
+    enriched_names = [col for col, _ in ENRICHED_COLUMNS]
 
     rows = []
     with open(csv_path, newline="", encoding="utf-8") as f:
@@ -108,21 +150,32 @@ def ingest(csv_path: Path, db_path: Path):
             notes = r.get("notes", "").strip()
 
             key = (raw_name, cp, notes)
-            fm, cm1, cm2, lm_name = existing_moves.get(key, (None, None, None, None))
+            prior = existing.get(key, {})
 
             rows.append((
                 raw_name, species, form, shadow, purified, cp, gl_rank,
-                fm, cm1, cm2, legacy_move, lm_name, has_return, notes,
+                prior.get("fast_move"),
+                prior.get("charge_move_1"),
+                prior.get("charge_move_2"),
+                legacy_move,
+                prior.get("legacy_move_name"),
+                has_return,
+                notes,
+                *[prior.get(col) for col in enriched_names],
             ))
+
+    enriched_col_list = ", ".join(enriched_names)
+    placeholders = ", ".join(["?"] * (14 + len(enriched_names)))
 
     with conn:
         conn.execute("DELETE FROM mons")
         conn.executemany(
-            """INSERT INTO mons
+            f"""INSERT INTO mons
                (raw_name, species, form, shadow, purified, cp, gl_rank,
                 fast_move, charge_move_1, charge_move_2,
-                legacy_move, legacy_move_name, has_return, notes)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                legacy_move, legacy_move_name, has_return, notes,
+                {enriched_col_list})
+               VALUES ({placeholders})""",
             rows,
         )
 

@@ -2,7 +2,11 @@
 
 .DS_Store
 
+__pycache__/
+*.pyc
+
 wiki/**
 !.gitkeep
 
 ralph-loop.local.md
+spec.txt
