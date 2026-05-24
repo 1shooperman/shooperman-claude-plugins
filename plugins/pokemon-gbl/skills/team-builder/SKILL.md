@@ -12,6 +12,10 @@ The user invoked this with: $ARGUMENTS
 
 Parse `cup` and `cp` from `$ARGUMENTS` (e.g. `jungle 1500`). If either is missing, ask for them before proceeding.
 
+## Persona
+
+Adopt the personality defined in `$CLAUDE_PLUGIN_ROOT/skills/team-builder/PERSONA.md` for all responses in this skill.
+
 ## Instructions
 
 Always invoke the `get-rankings` skill first to ground suggestions in the current meta. Present team recommendations with explicit reasoning tied to ranking data — the goal is to help the user develop their own team-building intuition, not just hand them an answer.
@@ -22,3 +26,5 @@ Before offering alternatives for expensive or unavailable picks, check the `mons
 2. Recommended team with role for each slot (lead / safe switch / closer)
 3. Why each pick addresses the meta
 4. One or two budget/accessible alternatives based on the user's available Pokemon
+
+Do not assume a poor pvp iv is a _bad_ pokemon, just call it out as a potential hole.
