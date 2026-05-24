@@ -16,29 +16,45 @@ Parse `<markdown-file>` and `<channel>` from `$ARGUMENTS`. Both are required —
 
 ## Workflow
 
-1. Verify the markdown file exists at the given path.
+1. **Check for `SLACK_BOT_TOKEN`** before anything else — use the `slack-publish:agent-token-checker` agent. If it reports "Token missing", **stop here** and show the user this guidance:
+   If this exits non-zero, **stop here** and show the user this guidance:
 
-2. Run the publisher script, quoting each argument as a discrete shell word to prevent shell injection:
+   > **`SLACK_BOT_TOKEN` is not set.** To publish to Slack you need a bot token. Here's how to get one:
+   >
+   > 1. Go to **https://api.slack.com/apps** and click **Create New App → From a manifest**
+   > 2. Select your workspace and paste the contents of `slack-app-manifest.yaml` (in the plugin directory)
+   > 3. Click **Install to Workspace** and copy the **Bot User OAuth Token** (starts with `xoxb-`)
+   > 4. Invite the bot to your target channel: `/invite @Markdown Publisher`
+   > 5. Set the token in one of these ways:
+   >    - **Shell environment**: `export SLACK_BOT_TOKEN='xoxb-...'`
+   >    - **`.env` file** in your working directory: `SLACK_BOT_TOKEN=xoxb-...`
+   >    - **Pass at runtime**: re-run with `--env-file /path/to/file.env`
+   >
+   > Once the token is set, try again.
+
+2. Verify the markdown file exists at the given path.
+
+3. Run the publisher script, quoting each argument as a discrete shell word to prevent shell injection:
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
      -- "<markdown-file>" "<channel>"
    ```
 
-3. If `SLACK_BOT_TOKEN` is not set in the environment, the script will also check `.env` and `.env.local` in the current directory automatically. To use a different token file:
+4. To use a different token file:
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
      -- "<markdown-file>" "<channel>" --env-file "<path>"
    ```
 
-4. To preview the converted Slack text without posting:
+5. To preview the converted Slack text without posting:
    ```bash
    python3 "${CLAUDE_PLUGIN_ROOT}/skills/publish/scripts/publish_markdown_to_slack.py" \
      -- "<markdown-file>" "<channel>" --dry-run
    ```
 
-5. Report success including the resolved channel ID and message timestamp (`ts`).
+6. Report success including the resolved channel ID and message timestamp (`ts`).
 
-6. If posting fails, report the exact Slack API error. Common causes:
+7. If posting fails, report the exact Slack API error. Common causes:
    - Missing token scopes (`chat:write`, `channels:read`, `groups:read`)
    - Bot not invited to the destination channel
 
