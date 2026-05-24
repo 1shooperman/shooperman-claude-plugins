@@ -26,6 +26,12 @@ def test_pokeapi_name_galarian():
 def test_pokeapi_name_strips_apostrophe():
     assert pokeapi_name("Farfetch'd", None) == "farfetchd"
 
+def test_pokeapi_name_male_form():
+    assert pokeapi_name("Indeedee", "Male") == "indeedee-male"
+
+def test_pokeapi_name_female_form():
+    assert pokeapi_name("Indeedee", "Female") == "indeedee-female"
+
 
 # --- sprite_url ---
 
