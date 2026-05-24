@@ -56,11 +56,22 @@ After ingesting, the skill also:
 
 ## Data Sources
 
-- **pvpoke.com** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
-- **pokemondb.net** — GO type matchup chart (fetched once, cached indefinitely at `~/.cache/pokemon-gbl/type_chart.json`)
-- **pokemongo.com/en/news** — GO Battle League news for move change context
-- **pokeapi.co** — Pokemon types and move metadata (fetched on first enrich, cached in `~/.cache/pokemon-gbl/move_data.json`)
+- **[PvPoke](https://pvpoke.com)** — rankings JSON (cached locally for 48 hours at `~/.cache/pokemon-gbl/rankings/`)
+- **[PokemonDB](https://pokemondb.net)** — GO type matchup chart and sprite images (type chart fetched once, cached indefinitely at `~/.cache/pokemon-gbl/type_chart.json`)
+- **[PokeAPI](https://pokeapi.co)** — Pokemon types and move metadata (fetched on first enrich, cached in `~/.cache/pokemon-gbl/move_data.json`)
+- **[Pokemon GO](https://pokemongo.com/en/news)** — GO Battle League news for move change context
 - **mons.db** — personal pokemon collection (SQLite, written by `ingest-mons`, queried via the `mons-db` MCP server at `~/.cache/pokemon-gbl/mons.db`)
+
+## Attribution
+
+This plugin relies on data from third-party sources. All data belongs to their respective owners:
+
+- Rankings data provided by **[PvPoke](https://pvpoke.com)** — an open-source GO Battle League ranking and team-building tool
+- Type chart and sprite images provided by **[PokemonDB](https://pokemondb.net)**
+- Pokemon species and move data provided by **[PokeAPI](https://pokeapi.co)** — a free, open RESTful API
+- Pokemon GO is a trademark of **Niantic, Inc.** Pokémon and all related names are trademarks of **Nintendo / Creatures Inc. / GAME FREAK inc.**
+
+This plugin is not affiliated with or endorsed by any of the above.
 
 ## MCP Server
 
