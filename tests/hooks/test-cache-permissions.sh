@@ -105,6 +105,38 @@ assert_passthrough \
   '{"tool_name":"Bash","tool_input":{"command":"rm -rf ~/.cache/pokemon-gbl/type_chart.json"}}'
 
 assert_passthrough \
+  "Bash sudo rm on pokemon-gbl cache blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"sudo rm -rf ~/.cache/pokemon-gbl/type_chart.json"}}'
+
+assert_passthrough \
+  "Bash rmdir on pokemon-gbl cache blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"rmdir ~/.cache/pokemon-gbl"}}'
+
+assert_passthrough \
+  "Bash mv exfiltrates cache file blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"mv ~/.cache/pokemon-gbl/type_chart.json /tmp/stolen"}}'
+
+assert_passthrough \
+  "Bash chmod on cache directory blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"chmod 777 ~/.cache/pokemon-gbl"}}'
+
+assert_passthrough \
+  "Bash chown on cache directory blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"chown root ~/.cache/pokemon-gbl"}}'
+
+assert_passthrough \
+  "Bash compound: ls then rm on cache blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"ls ~/.cache/pokemon-gbl && rm -rf ~/.cache/pokemon-gbl"}}'
+
+assert_passthrough \
+  "Bash python3 with pokemon-gbl path but no /skills/ segment blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"python3 /some/path/pokemon-gbl/1.0.3/install.py"}}'
+
+assert_passthrough \
+  "Bash python3 with /skills/ path but no /pokemon-gbl/ segment blocked" \
+  '{"tool_name":"Bash","tool_input":{"command":"python3 /some/other/skills/evil.py"}}'
+
+assert_passthrough \
   "Bash arbitrary command" \
   '{"tool_name":"Bash","tool_input":{"command":"curl https://example.com"}}'
 
