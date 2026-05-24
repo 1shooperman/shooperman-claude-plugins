@@ -12,6 +12,7 @@ from publish_markdown_to_slack import (
     load_slack_token,
     main,
     markdown_to_slack,
+    resolve_channel_id,
 )
 
 
@@ -206,3 +207,115 @@ def test_main_dry_run_prints_and_exits_0(monkeypatch, tmp_path, capsys):
     assert main() == 0
     out = capsys.readouterr().out
     assert "*Hello*" in out
+
+
+def test_main_empty_rendered_exits_1(monkeypatch, tmp_path, capsys):
+    """A file whose content renders to empty (only blank lines) exits 1."""
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    md = tmp_path / "empty.md"
+    md.write_text("\n\n\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "#general"])
+    assert main() == 1
+    err = capsys.readouterr().err
+    assert "empty" in err.lower()
+
+
+def test_main_api_error_exits_1(monkeypatch, tmp_path, capsys):
+    """A RuntimeError from resolve_channel_id is caught, printed to stderr, exits 1."""
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    md = tmp_path / "msg.md"
+    md.write_text("Hello\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "#general"])
+
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "resolve_channel_id", lambda *_: (_ for _ in ()).throw(RuntimeError("channel_not_found")))
+    assert main() == 1
+    err = capsys.readouterr().err
+    assert "channel_not_found" in err
+
+
+def test_main_post_success_exits_0(monkeypatch, tmp_path, capsys):
+    """A successful post prints channel and ts, exits 0."""
+    monkeypatch.setenv("SLACK_BOT_TOKEN", "xoxb-test")
+    md = tmp_path / "msg.md"
+    md.write_text("Hello world\n")
+    monkeypatch.setattr(sys, "argv", ["prog", str(md), "CABCDEF123"])
+
+    import publish_markdown_to_slack as _mod
+    from publish_markdown_to_slack import SlackResult
+    monkeypatch.setattr(_mod, "resolve_channel_id", lambda token, ch: "CABCDEF123")
+    monkeypatch.setattr(_mod, "post_message", lambda token, ch, text: SlackResult(channel="CABCDEF123", ts="1234567890.000100"))
+    assert main() == 0
+    out = capsys.readouterr().out
+    assert "CABCDEF123" in out
+    assert "1234567890.000100" in out
+
+
+# --- resolve_channel_id ---
+
+def test_resolve_channel_id_already_an_id():
+    """A bare channel ID matching CHANNEL_ID_RE is returned unchanged without an API call."""
+    # CHANNEL_ID_RE = r"^[CGD][A-Z0-9]{8,}$"
+    result = resolve_channel_id("xoxb-fake", "CABCDEF123")
+    assert result == "CABCDEF123"
+
+
+def test_resolve_channel_id_strips_hash_prefix_when_already_id():
+    """A '#'-prefixed raw channel ID still gets resolved (hash stripped, lookup attempted)."""
+    # '#CABCDEF123' -> normalized 'CABCDEF123' which matches CHANNEL_ID_RE -> returned directly
+    result = resolve_channel_id("xoxb-fake", "#CABCDEF123")
+    assert result == "CABCDEF123"
+
+
+def test_resolve_channel_id_not_found_raises(monkeypatch):
+    """A channel name that does not appear in the API response raises RuntimeError."""
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "_iter_channels", lambda token: iter([{"name": "other-channel", "id": "COTHER0001"}]))
+    with pytest.raises(RuntimeError, match="Could not resolve channel name"):
+        resolve_channel_id("xoxb-fake", "#nonexistent")
+
+
+def test_resolve_channel_id_found_by_name(monkeypatch):
+    """A channel name matching an API result returns the correct ID."""
+    import publish_markdown_to_slack as _mod
+    monkeypatch.setattr(_mod, "_iter_channels", lambda token: iter([{"name": "general", "id": "CGENERAL001"}]))
+    result = resolve_channel_id("xoxb-fake", "#general")
+    assert result == "CGENERAL001"
+
+
+# --- load_slack_token (additional cases) ---
+
+def test_load_token_from_env_local_in_cwd(monkeypatch, tmp_path):
+    """Token is found in .env.local in the cwd when no env var or .env exists."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    (tmp_path / ".env.local").write_text("SLACK_BOT_TOKEN=xoxb-local\n")
+    monkeypatch.chdir(tmp_path)
+    assert load_slack_token(tmp_path / "file.md", None) == "xoxb-local"
+
+
+def test_load_token_from_dotenv_in_markdown_dir(monkeypatch, tmp_path):
+    """Token is found in .env next to the markdown file when cwd differs."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    subdir = tmp_path / "docs"
+    subdir.mkdir()
+    (subdir / ".env").write_text("SLACK_BOT_TOKEN=xoxb-subdir\n")
+    cwd_dir = tmp_path / "cwd"
+    cwd_dir.mkdir()
+    monkeypatch.chdir(cwd_dir)
+    assert load_slack_token(subdir / "file.md", None) == "xoxb-subdir"
+
+
+def test_load_token_explicit_env_file_missing(monkeypatch, tmp_path):
+    """An explicit --env-file that does not exist returns None."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    result = load_slack_token(tmp_path / "file.md", str(tmp_path / "nonexistent.env"))
+    assert result is None
+
+
+def test_load_token_explicit_env_file_no_token(monkeypatch, tmp_path):
+    """An explicit --env-file that exists but lacks SLACK_BOT_TOKEN returns None."""
+    monkeypatch.delenv("SLACK_BOT_TOKEN", raising=False)
+    env_file = tmp_path / "other.env"
+    env_file.write_text("OTHER_VAR=foo\n")
+    result = load_slack_token(tmp_path / "file.md", str(env_file))
+    assert result is None
