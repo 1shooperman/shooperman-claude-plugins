@@ -52,7 +52,9 @@ After ingesting, the skill also:
 1. Fetches move type metadata (from PokeAPI, cached at `~/.cache/pokemon-gbl/move_data.json`) — requires the rankings cache to exist first (`/get-rankings`)
 2. Enriches each mon with types, sprite URL, and move type/energy/turn counts
 
-> **Note:** Types and sprite URLs are not preserved across re-ingests. Running `/ingest-mons` clears them; the enrich step (Step 3) must run after every ingest to repopulate them. If a mon's types cannot be resolved from PokeAPI, enrich will exit with an error — add the mon to `TYPE_OVERRIDES` in `enrich.py` to fix it.
+> **Note:** Types and sprite URLs are not preserved across re-ingests. Running `/ingest-mons` clears them; the enrich step (Step 3) must run after every ingest to repopulate them. If enrich exits with an unresolved types error, there are two remedies:
+> - **Form stored as None but a form-specific override exists** — update the DB row directly: `UPDATE mons SET form='<Form Name>' WHERE species='<Species>';`, then re-run enrich. Use this for alternate forms (e.g. `Trash Cloak`, `Sky`, `Male`/`Female`).
+> - **No override and no valid PokeAPI slug** — add the mon to `TYPE_OVERRIDES` in `enrich.py` with the key `"<Species>__<form or None>"`. Gender forms (`Male`/`Female`) are handled automatically by `pokeapi_name` via the `meowstic-male` / `meowstic-female` pattern.
 
 ## Data Sources
 
