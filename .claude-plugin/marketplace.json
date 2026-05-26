@@ -16,7 +16,7 @@
       "category": "productivity",
       "source": {
         "source": "github",
-        "repo": "1shooperman/shooperman-claude-plugins/plugins/agent-ralph",
+        "repo": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/",
         "ref": "main"
       },
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
