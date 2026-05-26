@@ -16,8 +16,7 @@
       "category": "productivity",
       "source": {
         "source": "github",
-        "repo": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/",
-        "ref": "main"
+        "repo": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
       },
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
     },
