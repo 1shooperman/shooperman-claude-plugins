@@ -14,7 +14,11 @@
         "name": "Brandon Shoop <1shooperman>"
       },
       "category": "productivity",
-      "source": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools",
+      "source": {
+        "source": "github",
+        "repo": "1shooperman/shooperman-claude-plugins/plugins/agent-ralph",
+        "ref": "main"
+      },
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/custom-plugin-tools"
     },
     {
