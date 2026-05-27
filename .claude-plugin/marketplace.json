@@ -54,7 +54,7 @@
         "name": "Brandon Shoop <1shooperman>"
       },
       "category": "productivity",
-      "source": "./plugins/update",
+      "source": "./plugins/update-marketplace",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/update"
     }
   ]
