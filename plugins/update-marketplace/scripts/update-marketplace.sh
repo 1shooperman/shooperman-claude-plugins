@@ -13,12 +13,15 @@ set -euo pipefail
 MARKETPLACE_NAME="shooperman-claude-plugins"
 
 # setup 2: get plugin names
-PLUGINS=($(claude plugin list | grep "$MARKETPLACE_NAME" | sed 's/^[^a-zA-Z]*//'))
+PLUGINS=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && PLUGINS+=("$line")
+done < <(claude plugin list | grep "$MARKETPLACE_NAME" | sed 's/^[^a-zA-Z]*//' | sed "s/@$MARKETPLACE_NAME//" || true)
 
 echo "Updating $MARKETPLACE_NAME"
 claude plugin marketplace update "$MARKETPLACE_NAME"
 
-for plugin in "${PLUGINS[@]}"; do
+for plugin in "${PLUGINS[@]+"${PLUGINS[@]}"}"; do
     echo "Updating $plugin"
     claude plugin update "$plugin@$MARKETPLACE_NAME"
 done

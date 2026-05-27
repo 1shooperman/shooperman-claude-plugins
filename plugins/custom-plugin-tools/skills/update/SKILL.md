@@ -3,7 +3,7 @@ name: update
 description: Use this skill when the user asks to update a PR description, refresh PR body, or sync PR details based on branch changes. Triggered by phrases like "update PR#N desc", "refresh the PR description", or "update PR based on branch changes".
 user-invocable: true
 argument-hint: "<PR number>"
-allowed-tools: [Bash]
+allowed-tools: [Bash(gh pr*)]
 ---
 
 ## Arguments

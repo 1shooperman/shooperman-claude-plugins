@@ -9,7 +9,7 @@ description: >
   Context: update-pr skill is building a PR body
   assistant: "Running test-planner agent to generate test checklist from changed files"
   </example>
-allowed-tools: [Bash, Read]
+allowed-tools: [Bash(git diff*), Read]
 model: sonnet
 color: green
 ---

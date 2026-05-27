@@ -9,7 +9,7 @@ description: >
   Context: update-pr skill is building a PR body
   assistant: "Running security-auditor agent to review changed files"
   </example>
-allowed-tools: [Read, Glob, Grep, Bash]
+allowed-tools: [Read, Glob, Grep, Bash(git diff*)]
 model: sonnet
 color: red
 ---

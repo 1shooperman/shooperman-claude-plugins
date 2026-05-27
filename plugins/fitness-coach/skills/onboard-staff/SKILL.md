@@ -3,7 +3,7 @@ name: onboard-staff
 description: Use this skill when the user wants to create their coaching staff by naming real health and fitness experts (e.g. "onboard staff with Peter Attia, Andy Galpin, and Rhonda Patrick" or "/onboard-staff Peter Attia Andy Galpin")
 user-invocable: true
 argument-hint: "<name1> <name2> ... <nameN>"
-allowed-tools: [WebFetch, Write]
+allowed-tools: [WebFetch(https://*), Write]
 ---
 
 ## Arguments

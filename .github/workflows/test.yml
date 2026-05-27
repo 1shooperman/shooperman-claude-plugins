@@ -45,6 +45,14 @@ jobs:
       - name: Test
         run: pytest plugins/slack-publish/tests/ -q --tb=short
 
+  sast:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: SAST
+        run: make sast
+
   validate:
     runs-on: ubuntu-latest
     steps:
