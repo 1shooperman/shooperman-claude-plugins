@@ -46,6 +46,16 @@
       "category": "productivity",
       "source": "./plugins/slack-publish",
       "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/slack-publish"
+    },
+    {
+      "name": "update",
+      "description": "Updates the marketplace and all plugins to the latest version.",
+      "author": {
+        "name": "Brandon Shoop <1shooperman>"
+      },
+      "category": "productivity",
+      "source": "./plugins/update",
+      "homepage": "https://github.com/1shooperman/shooperman-claude-plugins/tree/main/plugins/update"
     }
   ]
 }
