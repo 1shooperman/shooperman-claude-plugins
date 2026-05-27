@@ -1,0 +1,9 @@
+{
+  "name": "update-marketplace",
+  "description": "Updates the marketplace and all plugins to the latest version.",
+  "author": {
+    "name": "1shooperman",
+    "email": "contact@aglflorida.com"
+  },
+  "version": "0.1.0"
+}
