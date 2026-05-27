@@ -1,7 +1,7 @@
 ---
 name: agent-updater
 description: Updates each plugin
-allowed-tools: [Bash(claude plugin *), Bash(bash *), Bash(echo)]
+allowed-tools: [Bash(claude plugin *), Bash(grep), Bash(echo), Bash(sed)]
 model: haiku
 color: cyan
 ---

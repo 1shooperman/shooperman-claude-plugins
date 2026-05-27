@@ -1,7 +1,7 @@
 ---
 name: agent-token-checker
 description: Checks whether SLACK_BOT_TOKEN is available (env var or .env file). Returns exit code 0 if found, 1 if missing. Used by the publish skill before attempting to post to Slack.
-allowed-tools: [Bash]
+allowed-tools: [Bash(python3 *)]
 model: haiku
 ---
 

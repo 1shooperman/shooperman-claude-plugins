@@ -14,7 +14,7 @@ description: >
   Context: a new script was added to a plugin
   assistant: "Running sdet agent to write tests/**/test-<script-name>.sh"
   </example>
-allowed-tools: [Bash, Read, Write]
+allowed-tools: [Bash(git diff*), Bash(find tests/*), Read, Write]
 model: sonnet
 color: yellow
 ---

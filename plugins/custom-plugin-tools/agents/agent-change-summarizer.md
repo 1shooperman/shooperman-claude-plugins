@@ -8,7 +8,7 @@ description: >
   Context: update-pr skill is building a PR body
   assistant: "Running change-summarizer agent to derive summary from branch diff"
   </example>
-allowed-tools: [Bash, Read]
+allowed-tools: [Bash(git log*), Bash(git diff*), Read]
 model: sonnet
 color: blue
 ---

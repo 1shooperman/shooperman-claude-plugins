@@ -3,7 +3,7 @@ name: compose
 description: Draft a new Markdown file for Slack publishing and save it to the XDG cache directory (~/.cache/slack-publish/). Use when the user wants to write or compose a message to send to Slack, e.g. "compose a Slack message", "draft a release announcement for Slack", "write a new post for #general", or runs /slack-publish:compose.
 user-invocable: true
 argument-hint: "<filename> [channel]"
-allowed-tools: [Bash, Write, Read]
+allowed-tools: [Bash(mkdir*), Bash(ls*), Write, Read]
 ---
 
 ## Arguments

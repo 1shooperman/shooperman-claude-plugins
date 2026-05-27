@@ -3,7 +3,7 @@ name: publish
 description: Publish a local Markdown file to a Slack channel as a formatted message (not a file upload). Use when the user asks to send or publish a .md file to Slack, e.g. "publish foo.md to #general", "send this markdown to my-channel", or runs /slack-publish:publish.
 user-invocable: true
 argument-hint: "<markdown-file> <channel>"
-allowed-tools: [Bash]
+allowed-tools: [Bash(python3 *)]
 ---
 
 ## Arguments

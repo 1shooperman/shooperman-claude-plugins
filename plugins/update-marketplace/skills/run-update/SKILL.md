@@ -1,7 +1,7 @@
 ---
 name: run-update
 description: Update the marketplace to the latest version, then update each plugin to the version specific.
-allowed-tools: [Bash]
+allowed-tools: []
 ---
 
 ## Instructions
